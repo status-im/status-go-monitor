@@ -3,27 +3,27 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/rpc"
 	"log"
 )
 
 type rcpResp map[string]interface{}
 
-const serverAddr = "127.0.0.1"
-const serverPort = 8545
+const host = "127.0.0.1"
+const port = 8545
 
 func main() {
-	addr := fmt.Sprintf("http://%s:%d", serverAddr, serverPort)
-	c, err := rpc.DialHTTP(addr)
+	url := fmt.Sprintf("http://%s:%d", host, port)
+	fmt.Println("Type :%t", url)
+	c, err := newClient(url)
 	if err != nil {
 		log.Fatal("Failed to connec to RPC:", err)
 	}
-	fmt.Println("Connected: ", addr)
-	var rval interface{}
-	err = c.Call(&rval, "admin_peers")
+	fmt.Println("Connected: ", url)
+
+	peers, err := c.getPeers()
 	if err != nil {
 		log.Fatal("Failed to make RPC call:", err)
 	}
-	pretty, err := json.MarshalIndent(rval, "", "  ")
+	pretty, err := json.MarshalIndent(peers, "", "  ")
 	fmt.Println("Response: ", string(pretty))
 }
