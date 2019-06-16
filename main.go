@@ -13,7 +13,6 @@ const port = 8545
 
 func main() {
 	url := fmt.Sprintf("http://%s:%d", host, port)
-	fmt.Println("Type :%t", url)
 	c, err := newClient(url)
 	if err != nil {
 		log.Fatal("Failed to connec to RPC:", err)
