@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/jroimartin/gocui"
 	"log"
 )
 
@@ -12,17 +12,35 @@ const host = "127.0.0.1"
 const port = 8545
 
 func main() {
-	url := fmt.Sprintf("http://%s:%d", host, port)
-	c, err := newClient(url)
+	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
-		log.Fatal("Failed to connec to RPC:", err)
+		log.Panicln(err)
 	}
-	fmt.Println("Connected: ", url)
+	defer g.Close()
 
-	peers, err := c.getPeers()
-	if err != nil {
-		log.Fatal("Failed to make RPC call:", err)
+	g.SetManagerFunc(layout)
+
+	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+		log.Panicln(err)
 	}
-	pretty, err := json.MarshalIndent(peers, "", "  ")
-	fmt.Println("Response: ", string(pretty))
+
+	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+		log.Panicln(err)
+	}
+}
+
+func layout(g *gocui.Gui) error {
+	maxX, maxY := g.Size()
+	if v, err := g.SetView("hello", 0, 0, maxX-1, maxY-1); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		fmt.Fprintln(v, "Hello world!")
+		fmt.Fprintln(v, "Hello world!")
+	}
+	return nil
+}
+
+func quit(g *gocui.Gui, v *gocui.View) error {
+	return gocui.ErrQuit
 }
