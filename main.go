@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/jroimartin/gocui"
 	"log"
 	"time"
+	//"github.com/kr/pretty"
+	"github.com/jroimartin/gocui"
 )
 
 type rcpResp map[string]interface{}
@@ -57,17 +58,16 @@ func fetchPeers(c *client, g *gocui.Gui) {
 	}
 }
 
-var idx int
-
-func writePeers(g *gocui.Gui, peers interface{}) {
+func writePeers(g *gocui.Gui, peers []Peer) {
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("main")
 		if err != nil {
 			return err
 		}
 		v.Clear()
-		idx++
-		fmt.Fprintf(v, "idx: %v\n", idx)
+		for _, peer := range peers {
+			fmt.Fprintf(v, "%v\n", peer)
+		}
 		return nil
 	})
 }

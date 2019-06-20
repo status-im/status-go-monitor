@@ -16,11 +16,11 @@ func newClient(url string) (*client, error) {
 	return &client{rpcClient}, nil
 }
 
-func (c *client) getPeers() (interface{}, error) {
-	var rval interface{}
-	err := c.rpcClient.Call(&rval, "admin_peers")
+func (c *client) getPeers() ([]Peer, error) {
+	peers := make([]Peer, 0)
+	err := c.rpcClient.Call(&peers, "admin_peers")
 	if err != nil {
 		return nil, err
 	}
-	return rval, nil
+	return peers, nil
 }
