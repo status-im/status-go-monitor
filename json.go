@@ -17,6 +17,10 @@ func (p Peer) String() string {
 
 type peerId string
 
+func (p Peer) AsTable() string {
+	return fmt.Sprintf("%15s | what", p.Id)
+}
+
 // the ID is too long to display in full in most places
 func (id peerId) String() string {
 	return fmt.Sprintf("%s...%s",

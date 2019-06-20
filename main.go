@@ -66,7 +66,7 @@ func writePeers(g *gocui.Gui, peers []Peer) {
 		}
 		v.Clear()
 		for _, peer := range peers {
-			fmt.Fprintf(v, "%v\n", peer)
+			fmt.Fprintf(v, "%s\n", peer.AsTable())
 		}
 		return nil
 	})
