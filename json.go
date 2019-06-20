@@ -1,11 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Peer struct {
 	Enode     string            `json:"enode"`
 	Id        peerId            `json:"id"`
-	Name      string            `json:"na"`
+	Name      string            `json:"name"`
 	Caps      []string          `json:"caps"`
 	Network   NetworkInfo       `json:"netrowkr"`
 	Protocols map[string]string `json:"protocols"`
@@ -18,7 +21,7 @@ func (p Peer) String() string {
 type peerId string
 
 func (p Peer) AsTable() string {
-	return fmt.Sprintf("%15s | what", p.Id)
+	return fmt.Sprintf("%15s | %30s | %s", p.Id, p.Name, strings.Join(p.Caps, ", "))
 }
 
 // the ID is too long to display in full in most places
