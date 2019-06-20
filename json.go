@@ -4,7 +4,7 @@ import "fmt"
 
 type Peer struct {
 	Enode     string            `json:"enode"`
-	Id        string            `json:"id"`
+	Id        peerId            `json:"id"`
 	Name      string            `json:"na"`
 	Caps      []string          `json:"caps"`
 	Network   NetworkInfo       `json:"netrowkr"`
@@ -13,6 +13,15 @@ type Peer struct {
 
 func (p Peer) String() string {
 	return fmt.Sprintf("Peer(id=%s)", p.Id)
+}
+
+type peerId string
+
+// the ID is too long to display in full in most places
+func (id peerId) String() string {
+	return fmt.Sprintf("%s...%s",
+		string(id[:6]),
+		string(id[len(id)-6:]))
 }
 
 type NetworkInfo struct {
