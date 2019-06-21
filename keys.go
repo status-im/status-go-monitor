@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jroimartin/gocui"
 )
 
@@ -13,8 +12,8 @@ type Binding struct {
 
 var bindings = [...]Binding{
 	Binding{gocui.KeyCtrlC, gocui.ModNone, quit},
-	Binding{gocui.KeyArrowUp, gocui.ModNone, HandlerCursorUp},
-	Binding{gocui.KeyArrowDown, gocui.ModNone, HandlerCursorDown},
+	Binding{gocui.KeyArrowUp, gocui.ModNone, HandlerCursorDispenser(-1)},
+	Binding{gocui.KeyArrowDown, gocui.ModNone, HandlerCursorDispenser(1)},
 }
 
 func keybindings(g *gocui.Gui) error {
@@ -26,20 +25,25 @@ func keybindings(g *gocui.Gui) error {
 	return nil
 }
 
-func HandlerCursorUp(g *gocui.Gui, v *gocui.View) error {
-	fmt.Println("UP")
-	return nil
-}
-
-func HandlerCursorDown(g *gocui.Gui, v *gocui.View) error {
-	if v != nil {
+func HandlerCursorDispenser(mod int) func(g *gocui.Gui, v *gocui.View) error {
+	return func(g *gocui.Gui, v *gocui.View) error {
+		if v == nil {
+			return nil
+		}
+		mx, _ := v.Size()
 		cx, cy := v.Cursor()
-		if err := v.SetCursor(cx, cy+1); err != nil {
+		if cy == 0 || cx == mx {
+			return nil
+		}
+		if err := v.SetCursor(cx, cy+mod); err != nil {
+			if mod == -1 {
+				return nil
+			}
 			ox, oy := v.Origin()
-			if err := v.SetOrigin(ox, oy+1); err != nil {
+			if err := v.SetOrigin(ox, oy+mod); err != nil {
 				return err
 			}
 		}
+		return nil
 	}
-	return nil
 }

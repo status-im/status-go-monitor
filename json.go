@@ -32,9 +32,7 @@ func (p Peer) AsTable(maxWidth int) string {
 
 // the ID is too long to display in full in most places
 func (id peerId) String() string {
-	return fmt.Sprintf("%s...%s",
-		string(id[:6]),
-		string(id[len(id)-6:]))
+	return fmt.Sprintf("%s...%s", string(id[:6]), string(id[len(id)-6:]))
 }
 
 type NetworkInfo struct {
