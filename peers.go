@@ -32,7 +32,6 @@ func WritePeers(g *gocui.Gui, peers []Peer) {
 		}
 		v.Clear()
 		maxWidth, _ := g.Size()
-		fmt.Fprintf(v, "%-15s | %-40s | %s\n", "Peer ID", "Name", "Protocols")
 		for _, peer := range peers {
 			fmt.Fprintf(v, "%s\n", peer.AsTable(maxWidth))
 		}
@@ -40,12 +39,25 @@ func WritePeers(g *gocui.Gui, peers []Peer) {
 	})
 }
 
+func boolToString(v bool, yes string, no string) string {
+	if v {
+		return yes
+	} else {
+		return no
+	}
+}
+
 func (p Peer) AsTable(maxWidth int) string {
 	var id string
-	if maxWidth > 50 {
+	if maxWidth > 160 {
 		id = string(p.Id)
 	} else {
 		id = p.Id.String()
 	}
-	return fmt.Sprintf("%15s | %30s | %s", id, p.Name, strings.Join(p.Caps, ", "))
+	return fmt.Sprintf("%s｜ %-15s｜ %-21s｜ %-7s｜ %-8s｜ %s",
+		id, p.Name,
+		p.Network.RemoteAddress,
+		boolToString(p.Network.Trusted, "trusted", "normal"),
+		boolToString(p.Network.Static, "static", "dynamic"),
+		strings.Join(p.Caps, ", "))
 }
