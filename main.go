@@ -47,7 +47,7 @@ func main() {
 
 func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-	if v, err := g.SetView("main", 0, 0, maxX-1, maxY-1); err != nil {
+	if v, err := g.SetView("main", 0, 0, maxX-1, maxY/2); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -58,6 +58,13 @@ func layout(g *gocui.Gui) error {
 		v.SetCursor(0, 1)
 		g.SetCurrentView("main")
 		fmt.Fprintln(v, "Loading peers...")
+	}
+	if v, err := g.SetView("info", 0, maxY/2+1, maxX-1, maxY-1); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Title = "Details"
+		fmt.Fprintln(v, "Loading details...")
 	}
 	return nil
 }
