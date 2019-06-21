@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jroimartin/gocui"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -37,4 +38,14 @@ func WritePeers(g *gocui.Gui, peers []Peer) {
 		}
 		return nil
 	})
+}
+
+func (p Peer) AsTable(maxWidth int) string {
+	var id string
+	if maxWidth > 50 {
+		id = string(p.Id)
+	} else {
+		id = p.Id.String()
+	}
+	return fmt.Sprintf("%15s | %30s | %s", id, p.Name, strings.Join(p.Caps, ", "))
 }
