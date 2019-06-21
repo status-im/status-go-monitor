@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 type Peer struct {
 	Enode     string            `json:"enode"`
@@ -20,19 +17,11 @@ func (p Peer) String() string {
 
 type peerId string
 
-func (p Peer) AsTable(maxWidth int) string {
-	var id string
-	if maxWidth > 50 {
-		id = string(p.Id)
-	} else {
-		id = p.Id.String()
-	}
-	return fmt.Sprintf("%15s | %30s | %s", id, p.Name, strings.Join(p.Caps, ", "))
-}
-
 // the ID is too long to display in full in most places
 func (id peerId) String() string {
-	return fmt.Sprintf("%s...%s", string(id[:6]), string(id[len(id)-6:]))
+	return fmt.Sprintf("%s...%s",
+		string(id[:6]),
+		string(id[len(id)-6:]))
 }
 
 type NetworkInfo struct {
