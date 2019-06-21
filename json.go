@@ -7,7 +7,7 @@ type Peer struct {
 	Id        peerId            `json:"id"`
 	Name      string            `json:"name"`
 	Caps      []string          `json:"caps"`
-	Network   NetworkInfo       `json:"netrowkr"`
+	Network   NetworkInfo       `json:"network"`
 	Protocols map[string]string `json:"protocols"`
 }
 

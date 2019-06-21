@@ -55,7 +55,7 @@ func layout(g *gocui.Gui) error {
 		v.SelBgColor = gocui.ColorGreen
 		v.Title = "Peers"
 		v.Highlight = true
-		v.SetCursor(0, 1)
+		v.SetCursor(0, 0)
 		g.SetCurrentView("main")
 		fmt.Fprintln(v, "Loading peers...")
 	}
