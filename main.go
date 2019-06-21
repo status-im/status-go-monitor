@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"time"
-	//"github.com/kr/pretty"
 	"github.com/jroimartin/gocui"
+	"log"
 )
 
 type rcpResp map[string]interface{}
@@ -23,6 +21,7 @@ func main() {
 	}
 	defer g.Close()
 
+	g.SelFgColor = gocui.ColorGreen
 	g.Highlight = true
 	g.Cursor = true
 
@@ -39,41 +38,11 @@ func main() {
 	}
 
 	// Start RPC calling routine
-	go fetchPeers(c, g)
+	go FetchPeers(c, g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
-}
-
-func fetchPeers(c *client, g *gocui.Gui) {
-	for {
-		select {
-		case <-threadDone:
-			return
-		case <-time.After(interval * time.Second):
-			peers, err := c.getPeers()
-			if err != nil {
-				log.Panicln(err)
-			}
-			writePeers(g, peers)
-		}
-	}
-}
-
-func writePeers(g *gocui.Gui, peers []Peer) {
-	g.Update(func(g *gocui.Gui) error {
-		v, err := g.View("main")
-		if err != nil {
-			return err
-		}
-		v.Clear()
-		maxWidth, _ := g.Size()
-		for _, peer := range peers {
-			fmt.Fprintf(v, "%s\n", peer.AsTable(maxWidth))
-		}
-		return nil
-	})
 }
 
 func layout(g *gocui.Gui) error {
@@ -82,8 +51,12 @@ func layout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
+		v.SelFgColor = gocui.ColorBlack
+		v.SelBgColor = gocui.ColorGreen
+		v.Title = "Peers"
 		v.Highlight = true
-		v.SetCursor(0, 0)
+		v.SetCursor(0, 1)
+		g.SetCurrentView("main")
 		fmt.Fprintln(v, "Loading peers...")
 	}
 	return nil
