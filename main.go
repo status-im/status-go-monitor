@@ -12,7 +12,7 @@ type rcpResp map[string]interface{}
 
 const host = "127.0.0.1"
 const port = 8545
-const interval = 3
+const interval = 5
 
 var threadDone = make(chan struct{})
 
@@ -22,6 +22,9 @@ func main() {
 		log.Panicln(err)
 	}
 	defer g.Close()
+
+	g.Highlight = true
+	g.Cursor = true
 
 	g.SetManagerFunc(layout)
 
@@ -73,19 +76,14 @@ func writePeers(g *gocui.Gui, peers []Peer) {
 	})
 }
 
-func keybindings(g *gocui.Gui) error {
-	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
-		return err
-	}
-	return nil
-}
-
 func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 	if v, err := g.SetView("main", 0, 0, maxX-1, maxY-1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
+		v.Highlight = true
+		v.SetCursor(0, 0)
 		fmt.Fprintln(v, "Loading peers...")
 	}
 	return nil
