@@ -30,9 +30,10 @@ func HandlerCursorDispenser(mod int) func(g *gocui.Gui, v *gocui.View) error {
 		if v == nil {
 			return nil
 		}
-		mx, _ := v.Size()
+		_, my := v.Size()
 		cx, cy := v.Cursor()
-		if cy == 0 || cx == mx {
+		log.Printf("my: %d, cx: %d, cy: %d", my, cx, cy)
+		if cy+mod < 0 || cy+mod == my {
 			return nil
 		}
 		if err := v.SetCursor(cx, cy+mod); err != nil {
