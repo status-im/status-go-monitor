@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jroimartin/gocui"
 	"log"
 	"os"
@@ -28,7 +27,9 @@ func main() {
 	}
 	defer g.Close()
 
-	mainView := &View{
+	peers := NewPeersState(host, port)
+
+	mainView := &ViewController{
 		Name:        "main",
 		Title:       "Peers",
 		Placeholder: "Loading peers...",
@@ -37,6 +38,7 @@ func main() {
 		Current:     true,
 		SelFgColor:  gocui.ColorBlack,
 		SelBgColor:  gocui.ColorGreen,
+		Data:        peers,
 		TopLeft: func(mx, my int) (int, int) {
 			return 0, 0
 		},
@@ -50,7 +52,7 @@ func main() {
 		Binding{gocui.KeyArrowUp, gocui.ModNone, mainView.CursorUp},
 		Binding{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
 	}
-	infoView := &View{
+	infoView := &ViewController{
 		Name:        "info",
 		Title:       "Details",
 		Placeholder: "Loading details...",
@@ -62,20 +64,14 @@ func main() {
 		},
 	}
 
-	views := []*View{mainView, infoView}
+	views := []*ViewController{mainView, infoView}
 
 	vm := NewViewManager(g, views)
 
 	g.SetManagerFunc(vm.Layout)
 
-	url := fmt.Sprintf("http://%s:%d", host, port)
-	c, err := newClient(url)
-	if err != nil {
-		log.Panicln(err)
-	}
-
 	// Start RPC calling routine
-	go FetchPeers(c, g)
+	go peers.Fetch(g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
