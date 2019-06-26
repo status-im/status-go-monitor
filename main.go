@@ -38,7 +38,9 @@ func main() {
 		Current:     true,
 		SelFgColor:  gocui.ColorBlack,
 		SelBgColor:  gocui.ColorGreen,
-		Data:        peers,
+		// extra field for view state
+		State: peers,
+		// corner positions
 		TopLeft: func(mx, my int) (int, int) {
 			return 0, 0
 		},
@@ -56,6 +58,7 @@ func main() {
 		Name:        "info",
 		Title:       "Details",
 		Placeholder: "Loading details...",
+		// corner positions
 		TopLeft: func(mx, my int) (int, int) {
 			return 0, my/2 + 1
 		},
