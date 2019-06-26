@@ -12,22 +12,6 @@ type Binding struct {
 	Handler func(g *gocui.Gui, v *gocui.View) error
 }
 
-var bindings = [...]Binding{
-	Binding{gocui.KeyCtrlC, gocui.ModNone, quit},
-	Binding{gocui.KeyArrowUp, gocui.ModNone, HandlerCursorDispenser(-1)},
-	Binding{gocui.KeyArrowDown, gocui.ModNone, HandlerCursorDispenser(1)},
-}
-
-func keybindings(g *gocui.Gui) error {
-	for _, b := range bindings {
-		// IDEA: I can pass a method instead of a function here
-		if err := g.SetKeybinding("", b.Key, b.Mod, b.Handler); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func HandlerCursorDispenser(mod int) func(g *gocui.Gui, v *gocui.View) error {
 	return func(g *gocui.Gui, v *gocui.View) error {
 		if v == nil {

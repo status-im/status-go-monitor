@@ -28,15 +28,48 @@ func main() {
 	}
 	defer g.Close()
 
+	views := []*View{
+		&View{
+			Name:        "main",
+			Title:       "Peers",
+			Placeholder: "Loading peers...",
+			Cursor:      true,
+			Highlight:   true,
+			Current:     true,
+			SelFgColor:  gocui.ColorBlack,
+			SelBgColor:  gocui.ColorGreen,
+			Keybindings: []Binding{
+				Binding{gocui.KeyCtrlC, gocui.ModNone, quit},
+				Binding{gocui.KeyArrowUp, gocui.ModNone, HandlerCursorDispenser(-1)},
+				Binding{gocui.KeyArrowDown, gocui.ModNone, HandlerCursorDispenser(1)},
+			},
+			TopLeft: func(mx, my int) (int, int) {
+				return 0, 0
+			},
+			BotRight: func(mx, my int) (int, int) {
+				return mx - 1, my / 2
+			},
+		},
+		&View{
+			Name:        "info",
+			Title:       "Details",
+			Placeholder: "Loading details...",
+			TopLeft: func(mx, my int) (int, int) {
+				return 0, my/2 + 1
+			},
+			BotRight: func(mx, my int) (int, int) {
+				return mx - 1, my - 1
+			},
+		},
+	}
+
+	vm := NewViewManager(g, views)
+
 	g.SelFgColor = gocui.ColorGreen
 	g.Highlight = true
 	g.Cursor = true
 
-	g.SetManagerFunc(layout)
-
-	if err := keybindings(g); err != nil {
-		log.Panicln(err)
-	}
+	g.SetManagerFunc(vm.Layout)
 
 	url := fmt.Sprintf("http://%s:%d", host, port)
 	c, err := newClient(url)
@@ -50,30 +83,6 @@ func main() {
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
-}
-
-func layout(g *gocui.Gui) error {
-	maxX, maxY := g.Size()
-	if v, err := g.SetView("main", 0, 0, maxX-1, maxY/2); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		v.SelFgColor = gocui.ColorBlack
-		v.SelBgColor = gocui.ColorGreen
-		v.Title = "Peers"
-		v.Highlight = true
-		v.SetCursor(0, 0)
-		g.SetCurrentView("main")
-		fmt.Fprintln(v, "Loading peers...")
-	}
-	if v, err := g.SetView("info", 0, maxY/2+1, maxX-1, maxY-1); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		v.Title = "Details"
-		fmt.Fprintln(v, "Loading details...")
-	}
-	return nil
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {
