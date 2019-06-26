@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/jroimartin/gocui"
 )
 
@@ -18,6 +20,7 @@ var bindings = [...]Binding{
 
 func keybindings(g *gocui.Gui) error {
 	for _, b := range bindings {
+		// IDEA: I can pass a method instead of a function here
 		if err := g.SetKeybinding("", b.Key, b.Mod, b.Handler); err != nil {
 			return err
 		}
