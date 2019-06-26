@@ -17,7 +17,7 @@ func (vc *ViewController) CursorUp(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (vc *ViewController) CursorDown(g *gocui.Gui, v *gocui.View) error {
-	peers := vc.Data.(*PeersState).list
+	peers := vc.State.(*PeersState).list
 	_, cy := v.Cursor()
 	// Don't go beyond available list of peers
 	if cy+1 >= len(peers) {
