@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jroimartin/gocui"
 	"log"
+	"os"
 )
 
 type rcpResp map[string]interface{}
@@ -15,6 +16,12 @@ const interval = 5
 var threadDone = make(chan struct{})
 
 func main() {
+	clientLogFile, err := os.OpenFile("/tmp/x.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Panicln(err)
+	}
+	log.SetOutput(clientLogFile)
+
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
