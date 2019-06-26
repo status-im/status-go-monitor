@@ -28,40 +28,41 @@ func main() {
 	}
 	defer g.Close()
 
-	views := []*View{
-		&View{
-			Name:        "main",
-			Title:       "Peers",
-			Placeholder: "Loading peers...",
-			Cursor:      true,
-			Highlight:   true,
-			Current:     true,
-			SelFgColor:  gocui.ColorBlack,
-			SelBgColor:  gocui.ColorGreen,
-			Keybindings: []Binding{
-				Binding{gocui.KeyCtrlC, gocui.ModNone, quit},
-				Binding{gocui.KeyArrowUp, gocui.ModNone, HandlerCursorDispenser(-1)},
-				Binding{gocui.KeyArrowDown, gocui.ModNone, HandlerCursorDispenser(1)},
-			},
-			TopLeft: func(mx, my int) (int, int) {
-				return 0, 0
-			},
-			BotRight: func(mx, my int) (int, int) {
-				return mx - 1, my / 2
-			},
+	mainView := &View{
+		Name:        "main",
+		Title:       "Peers",
+		Placeholder: "Loading peers...",
+		Cursor:      true,
+		Highlight:   true,
+		Current:     true,
+		SelFgColor:  gocui.ColorBlack,
+		SelBgColor:  gocui.ColorGreen,
+		TopLeft: func(mx, my int) (int, int) {
+			return 0, 0
 		},
-		&View{
-			Name:        "info",
-			Title:       "Details",
-			Placeholder: "Loading details...",
-			TopLeft: func(mx, my int) (int, int) {
-				return 0, my/2 + 1
-			},
-			BotRight: func(mx, my int) (int, int) {
-				return mx - 1, my - 1
-			},
+		BotRight: func(mx, my int) (int, int) {
+			return mx - 1, my / 2
 		},
 	}
+	// bindings defined separately so handlers can reference mainView
+	mainView.Keybindings = []Binding{
+		Binding{gocui.KeyCtrlC, gocui.ModNone, quit},
+		Binding{gocui.KeyArrowUp, gocui.ModNone, mainView.CursorUp},
+		Binding{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
+	}
+	infoView := &View{
+		Name:        "info",
+		Title:       "Details",
+		Placeholder: "Loading details...",
+		TopLeft: func(mx, my int) (int, int) {
+			return 0, my/2 + 1
+		},
+		BotRight: func(mx, my int) (int, int) {
+			return mx - 1, my - 1
+		},
+	}
+
+	views := []*View{mainView, infoView}
 
 	vm := NewViewManager(g, views)
 
