@@ -8,23 +8,38 @@ import (
 	"time"
 )
 
-func FetchPeers(c *client, g *gocui.Gui) {
+type PeersState struct {
+	c    *client
+	list []Peer
+}
+
+func NewPeersState(host string, port int) *PeersState {
+	url := fmt.Sprintf("http://%s:%d", host, port)
+	c, err := newClient(url)
+	if err != nil {
+		log.Panicln(err)
+	}
+	return &PeersState{c: c}
+}
+
+func (p *PeersState) Fetch(g *gocui.Gui) {
 	for {
 		select {
 		case <-threadDone:
 			return
 		default:
-			peers, err := c.getPeers()
+			peers, err := p.c.getPeers()
 			if err != nil {
 				log.Panicln(err)
 			}
-			WritePeers(g, peers)
+			p.list = peers
+			writePeers(g, peers)
 		}
 		<-time.After(interval * time.Second)
 	}
 }
 
-func WritePeers(g *gocui.Gui, peers []Peer) {
+func writePeers(g *gocui.Gui, peers []Peer) {
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("main")
 		if err != nil {

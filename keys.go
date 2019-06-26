@@ -12,15 +12,21 @@ type Binding struct {
 	Handler func(g *gocui.Gui, v *gocui.View) error
 }
 
-func (vc *View) CursorUp(g *gocui.Gui, v *gocui.View) error {
-	return MoveCursor(-1, g, v)
+func (vc *ViewController) CursorUp(g *gocui.Gui, v *gocui.View) error {
+	return MoveCursor(-1, v)
 }
 
-func (vc *View) CursorDown(g *gocui.Gui, v *gocui.View) error {
-	return MoveCursor(1, g, v)
+func (vc *ViewController) CursorDown(g *gocui.Gui, v *gocui.View) error {
+	peers := vc.Data.(*PeersState).list
+	_, cy := v.Cursor()
+	// Don't go beyond available list of peers
+	if cy+1 >= len(peers) {
+		return nil
+	}
+	return MoveCursor(1, v)
 }
 
-func MoveCursor(mod int, g *gocui.Gui, v *gocui.View) error {
+func MoveCursor(mod int, v *gocui.View) error {
 	if v == nil {
 		return nil
 	}

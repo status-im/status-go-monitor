@@ -6,7 +6,7 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
-type View struct {
+type ViewController struct {
 	Name        string
 	Title       string
 	Placeholder string
@@ -19,14 +19,15 @@ type View struct {
 	SelFgColor  gocui.Attribute
 	Keybindings []Binding
 	Manager     ViewManager
+	Data        interface{}
 }
 
 type ViewManager struct {
 	g     *gocui.Gui
-	views []*View
+	views []*ViewController
 }
 
-func NewViewManager(g *gocui.Gui, views []*View) *ViewManager {
+func NewViewManager(g *gocui.Gui, views []*ViewController) *ViewManager {
 	vm := ViewManager{
 		g:     g,
 		views: views,
@@ -66,7 +67,7 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 	return nil
 }
 
-func (v *View) SetKeybindings(g *gocui.Gui) error {
+func (v *ViewController) SetKeybindings(g *gocui.Gui) error {
 	for _, b := range v.Keybindings {
 		// IDEA: I can pass a method instead of a function here
 		if err := g.SetKeybinding("", b.Key, b.Mod, b.Handler); err != nil {
