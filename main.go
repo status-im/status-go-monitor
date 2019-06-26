@@ -65,10 +65,6 @@ func main() {
 
 	vm := NewViewManager(g, views)
 
-	g.SelFgColor = gocui.ColorGreen
-	g.Highlight = true
-	g.Cursor = true
-
 	g.SetManagerFunc(vm.Layout)
 
 	url := fmt.Sprintf("http://%s:%d", host, port)
