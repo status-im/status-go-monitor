@@ -23,7 +23,7 @@ type ViewController struct {
 	SelFgColor  gocui.Attribute
 	Keybindings []Binding
 	// extra field for view state
-	State interface{}
+	State *State
 }
 
 type ViewManager struct {
