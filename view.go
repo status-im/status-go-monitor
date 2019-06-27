@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/jroimartin/gocui"
 )
@@ -41,8 +42,8 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 		x1, y1 := cfg.BotRight(mx, my)
 
 		v, err := g.SetView(cfg.Name, x0, y0, x1, y1)
-		if err == nil && err != gocui.ErrUnknownView {
-			return err
+		if err != nil && err != gocui.ErrUnknownView {
+			log.Panicln(err)
 		}
 		v.Title = cfg.Title
 		v.Wrap = cfg.Wrap
