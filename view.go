@@ -10,10 +10,12 @@ type ViewController struct {
 	Name        string
 	Title       string
 	Placeholder string
+	Enabled     bool
 	Wrap        bool
 	Cursor      bool
 	Current     bool
 	Highlight   bool
+	OnTop       bool
 	TopLeft     func(int, int) (int, int)
 	BotRight    func(int, int) (int, int)
 	SelBgColor  gocui.Attribute
@@ -32,6 +34,9 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 	mx, my := g.Size()
 
 	for _, cfg := range m.views {
+		if !cfg.Enabled {
+			continue
+		}
 		x0, y0 := cfg.TopLeft(mx, my)
 		x1, y1 := cfg.BotRight(mx, my)
 
@@ -49,7 +54,10 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 			v.SetCursor(0, 0)
 		}
 		if cfg.Current {
-			g.SetCurrentView("main")
+			g.SetCurrentView(cfg.Name)
+		}
+		if cfg.OnTop {
+			g.SetViewOnTop(cfg.Name)
 		}
 		fmt.Fprintln(v, cfg.Placeholder)
 		cfg.SetKeybindings(g)

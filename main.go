@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/jroimartin/gocui"
 	"log"
 	"os"
+
+	"github.com/jroimartin/gocui"
 )
 
 type rcpResp map[string]interface{}
@@ -33,6 +34,7 @@ func main() {
 		Name:        "main",
 		Title:       "Peers",
 		Placeholder: "Loading peers...",
+		Enabled:     true,
 		Cursor:      true,
 		Highlight:   true,
 		Current:     true,
@@ -40,12 +42,8 @@ func main() {
 		SelBgColor:  gocui.ColorGreen,
 		State:       peers,
 		// corner positions
-		TopLeft: func(mx, my int) (int, int) {
-			return 0, 0
-		},
-		BotRight: func(mx, my int) (int, int) {
-			return mx - 1, my / 2
-		},
+		TopLeft:  func(mx, my int) (int, int) { return 0, 0 },
+		BotRight: func(mx, my int) (int, int) { return mx - 1, my / 2 },
 	}
 	// bindings defined separately so handlers can reference mainView
 	mainView.Keybindings = []Binding{
@@ -59,14 +57,11 @@ func main() {
 		Name:        "info",
 		Title:       "Details",
 		Placeholder: "Loading details...",
+		Enabled:     true,
 		Wrap:        true,
 		// corner positions
-		TopLeft: func(mx, my int) (int, int) {
-			return 0, my/2 + 1
-		},
-		BotRight: func(mx, my int) (int, int) {
-			return mx - 1, my - 1
-		},
+		TopLeft:  func(mx, my int) (int, int) { return 0, my/2 + 1 },
+		BotRight: func(mx, my int) (int, int) { return mx - 1, my - 1 },
 	}
 
 	views := []*ViewController{mainView, infoView}
