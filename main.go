@@ -73,7 +73,7 @@ func main() {
 	g.SetManagerFunc(vm.Layout)
 
 	// Start RPC calling routine
-	go peers.Fetch(g)
+	go peers.FetchLoop(g)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)

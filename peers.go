@@ -22,21 +22,26 @@ func NewPeersState(host string, port int) *PeersState {
 	return &PeersState{c: c}
 }
 
-func (p *PeersState) Fetch(g *gocui.Gui) {
+func (p *PeersState) FetchLoop(g *gocui.Gui) {
 	for {
 		select {
 		case <-threadDone:
 			return
 		default:
-			peers, err := p.c.getPeers()
-			if err != nil {
-				log.Panicln(err)
-			}
-			p.list = peers
+			peers := p.Fetch()
 			writePeers(g, peers)
 		}
 		<-time.After(interval * time.Second)
 	}
+}
+
+func (p *PeersState) Fetch() []Peer {
+	peers, err := p.c.getPeers()
+	if err != nil {
+		log.Panicln(err)
+	}
+	p.list = peers
+	return peers
 }
 
 func writePeers(g *gocui.Gui, peers []Peer) {
