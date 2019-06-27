@@ -57,6 +57,7 @@ func main() {
 		Name:        "info",
 		Title:       "Details",
 		Placeholder: "Loading details...",
+		Wrap:        true,
 		// corner positions
 		TopLeft: func(mx, my int) (int, int) {
 			return 0, my/2 + 1
