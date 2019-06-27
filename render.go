@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/jroimartin/gocui"
@@ -10,12 +11,13 @@ import (
 func GenRenderFunc(g *gocui.Gui, state *State) func() {
 	return func() {
 		ps := state.GetState()
-		renderPeers(g, ps.Peers)
+		renderPeerList(g, ps.Peers)
 		renderPeerInfo(g, state.GetCurrent())
+		updatePeerCursor(g, ps.Current)
 	}
 }
 
-func renderPeers(g *gocui.Gui, peers []Peer) {
+func renderPeerList(g *gocui.Gui, peers []Peer) {
 	if len(peers) == 0 {
 		return
 	}
@@ -56,11 +58,18 @@ func renderPeerInfo(g *gocui.Gui, peer *Peer) {
 	})
 }
 
-func boolToString(v bool, yes string, no string) string {
-	if v {
-		return yes
-	} else {
-		return no
+func updatePeerCursor(g *gocui.Gui, current int) {
+	v, err := g.View("main")
+	if err != nil {
+		log.Panicln("unable to find main view")
+	}
+	cx, _ := v.Cursor()
+
+	if err := v.SetCursor(cx, current); err != nil {
+		ox, _ := v.Origin()
+		if err := v.SetOrigin(ox, current); err != nil {
+			log.Panicln("unable to scroll")
+		}
 	}
 }
 
@@ -76,4 +85,12 @@ func (p Peer) AsTable(maxWidth int) string {
 		p.Network.RemoteAddress,
 		boolToString(p.Network.Trusted, "trusted", "normal"),
 		boolToString(p.Network.Static, "static", "dynamic"))
+}
+
+func boolToString(v bool, yes string, no string) string {
+	if v {
+		return yes
+	} else {
+		return no
+	}
 }

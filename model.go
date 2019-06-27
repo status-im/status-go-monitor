@@ -15,6 +15,9 @@ type Model struct {
 }
 
 func (m *Model) Current(state PeersState, peerIndex int) PeersState {
+	if peerIndex < 0 || peerIndex >= len(state.Peers) {
+		return state
+	}
 	return PeersState{
 		Peers:   state.Peers,
 		Current: peerIndex,
