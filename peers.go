@@ -97,7 +97,7 @@ func (p Peer) AsTable(maxWidth int) string {
 	} else {
 		id = p.Id.String()
 	}
-	return fmt.Sprintf("%s｜ %-15s｜ %-21s｜ %-7s｜ %-8s",
+	return fmt.Sprintf("%s ｜  %-15s ｜  %-21s ｜  %-7s ｜  %-8s",
 		id, p.Name,
 		p.Network.RemoteAddress,
 		boolToString(p.Network.Trusted, "trusted", "normal"),
