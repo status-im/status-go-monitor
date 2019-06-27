@@ -71,10 +71,11 @@ func writePeerDetails(g *gocui.Gui, peer *Peer) {
 			return err
 		}
 		v.Clear()
-		fmt.Fprintf(v, strings.Repeat("%-8s: %s\n", 6),
+		fmt.Fprintf(v, strings.Repeat("%-8s: %v\n", 7),
 			"Name", peer.Name,
 			"ID", string(peer.Id),
 			"Enode", peer.Enode,
+			"Static", peer.Network.Static,
 			"Local", peer.Network.LocalAddress,
 			"Remote", peer.Network.RemoteAddress,
 			"Caps", strings.Join(peer.Caps, ", "))
