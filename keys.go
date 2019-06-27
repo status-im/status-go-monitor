@@ -44,3 +44,9 @@ func MoveCursor(mod int, vc *ViewController, g *gocui.Gui, v *gocui.View) error 
 	}
 	return nil
 }
+
+func (vc *ViewController) HandleDelete(g *gocui.Gui, v *gocui.View) error {
+	ps := vc.State.(*PeersState)
+	selectedPeer := ps.selected
+	rval := ps.Remove(*selectedPeer)
+}

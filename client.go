@@ -24,3 +24,12 @@ func (c *client) getPeers() ([]Peer, error) {
 	}
 	return peers, nil
 }
+
+func (c *client) removePeer(enode string) (bool, error) {
+	var rval bool
+	err := c.rpcClient.Call(&rval, "admin_removePeer", enode)
+	if err != nil {
+		return false, err
+	}
+	return rval, nil
+}

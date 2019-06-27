@@ -52,6 +52,8 @@ func main() {
 		Binding{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
 		Binding{'k', gocui.ModNone, mainView.CursorUp},
 		Binding{'j', gocui.ModNone, mainView.CursorDown},
+		Binding{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
+		Binding{'d', gocui.ModNone, mainView.HandleDelete},
 	}
 	infoView := &ViewController{
 		Name:        "info",
@@ -60,7 +62,7 @@ func main() {
 		Enabled:     true,
 		Wrap:        true,
 		// corner positions
-		TopLeft:  func(mx, my int) (int, int) { return 0, my/2 + 1 },
+		TopLeft:  func(mx, my int) (int, int) { return 0, (my / 2) + 1 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my - 1 },
 	}
 
