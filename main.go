@@ -38,8 +38,7 @@ func main() {
 		Current:     true,
 		SelFgColor:  gocui.ColorBlack,
 		SelBgColor:  gocui.ColorGreen,
-		// extra field for view state
-		State: peers,
+		State:       peers,
 		// corner positions
 		TopLeft: func(mx, my int) (int, int) {
 			return 0, 0
@@ -69,7 +68,7 @@ func main() {
 
 	views := []*ViewController{mainView, infoView}
 
-	vm := NewViewManager(g, views)
+	vm := ViewManager{g: g, views: views}
 
 	g.SetManagerFunc(vm.Layout)
 
