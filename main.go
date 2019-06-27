@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -16,19 +17,30 @@ const interval = 5
 var threadDone = make(chan struct{})
 
 func main() {
+	// Custom location for log messages
 	clientLogFile, err := os.OpenFile("./app.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Panicln(err)
 	}
 	log.SetOutput(clientLogFile)
 
+	// Core object for the Terminal UI
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
 	}
 	defer g.Close()
 
-	peers := NewPeersState(host, port)
+	// Client necessary for doing RPC calls to status-go
+	url := fmt.Sprintf("http://%s:%d", host, port)
+	client, err := newClient(url)
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	state := NewState()
+	// Subscribe rendering method to state changes
+	state.Store.Subscribe(GenRenderFunc(g, state))
 
 	mainView := &ViewController{
 		Name:        "main",
@@ -40,7 +52,7 @@ func main() {
 		Current:     true,
 		SelFgColor:  gocui.ColorBlack,
 		SelBgColor:  gocui.ColorGreen,
-		State:       peers,
+		State:       state,
 		// corner positions
 		TopLeft:  func(mx, my int) (int, int) { return 0, 0 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my / 2 },
@@ -52,8 +64,8 @@ func main() {
 		Binding{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
 		Binding{'k', gocui.ModNone, mainView.CursorUp},
 		Binding{'j', gocui.ModNone, mainView.CursorDown},
-		Binding{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
-		Binding{'d', gocui.ModNone, mainView.HandleDelete},
+		//Binding{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
+		//Binding{'d', gocui.ModNone, mainView.HandleDelete},
 	}
 	infoView := &ViewController{
 		Name:        "info",
@@ -61,6 +73,7 @@ func main() {
 		Placeholder: "Loading details...",
 		Enabled:     true,
 		Wrap:        true,
+		State:       state,
 		// corner positions
 		TopLeft:  func(mx, my int) (int, int) { return 0, (my / 2) + 1 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my - 1 },
@@ -73,7 +86,7 @@ func main() {
 	g.SetManagerFunc(vm.Layout)
 
 	// Start RPC calling routine
-	go peers.FetchLoop(g)
+	go FetchLoop(client, state)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)

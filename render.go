@@ -2,54 +2,25 @@ package main
 
 import (
 	"fmt"
-	"github.com/jroimartin/gocui"
 	"log"
 	"strings"
-	"time"
+
+	"github.com/jroimartin/gocui"
 )
 
-type PeersState struct {
-	c        *client
-	list     []Peer
-	selected *Peer
-}
-
-func NewPeersState(host string, port int) *PeersState {
-	url := fmt.Sprintf("http://%s:%d", host, port)
-	c, err := newClient(url)
-	if err != nil {
-		log.Panicln(err)
-	}
-	return &PeersState{c: c}
-}
-
-func (p *PeersState) FetchLoop(g *gocui.Gui) {
-	for {
-		select {
-		case <-threadDone:
-			return
-		default:
-			peers := p.Fetch()
-			writePeers(g, peers)
-			writePeerDetails(g, p.selected)
-		}
-		<-time.After(interval * time.Second)
+func GenRenderFunc(g *gocui.Gui, state *State) func() {
+	return func() {
+		log.Printf("Rendering!")
+		ps := state.GetState()
+		renderPeers(g, ps.Peers)
+		renderPeerInfo(g, ps.Current)
 	}
 }
 
-func (p *PeersState) Fetch() []Peer {
-	peers, err := p.c.getPeers()
-	if err != nil {
-		log.Panicln(err)
+func renderPeers(g *gocui.Gui, peers []Peer) {
+	if len(peers) == 0 {
+		return
 	}
-	p.list = peers
-	if p.selected == nil {
-		p.selected = &peers[0]
-	}
-	return peers
-}
-
-func writePeers(g *gocui.Gui, peers []Peer) {
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("main")
 		if err != nil {
@@ -64,15 +35,10 @@ func writePeers(g *gocui.Gui, peers []Peer) {
 	})
 }
 
-func (p *PeersState) Remove(peer Peer) error {
-	success, err := p.c.removePeer(peer.Enode)
-	if err != nil || success != true {
-		log.Panicln(err)
+func renderPeerInfo(g *gocui.Gui, peer *Peer) {
+	if peer == nil {
+		return
 	}
-	return nil
-}
-
-func writePeerDetails(g *gocui.Gui, peer *Peer) {
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("info")
 		if err != nil {

@@ -24,15 +24,15 @@ func MoveCursor(mod int, vc *ViewController, g *gocui.Gui, v *gocui.View) error 
 	}
 	cx, cy := v.Cursor()
 	// get peers
-	ps := vc.State.(*PeersState)
-	peers := ps.list
+	ps := vc.State.GetState()
+	peers := ps.Peers
 	// Don't go beyond available list of peers
 	if cy+mod >= len(peers) || cy+mod < 0 {
 		return nil
 	}
 	// update currently selected peer in the list
-	ps.selected = &peers[cy+mod]
-	writePeerDetails(g, ps.selected)
+	current := &peers[cy+mod]
+	vc.State.SetCurrent(current)
 	if err := v.SetCursor(cx, cy+mod); err != nil {
 		if mod == -1 {
 			return nil
@@ -45,8 +45,8 @@ func MoveCursor(mod int, vc *ViewController, g *gocui.Gui, v *gocui.View) error 
 	return nil
 }
 
-func (vc *ViewController) HandleDelete(g *gocui.Gui, v *gocui.View) error {
-	ps := vc.State.(*PeersState)
-	selectedPeer := ps.selected
-	rval := ps.Remove(*selectedPeer)
-}
+//func (vc *ViewController) HandleDelete(g *gocui.Gui, v *gocui.View) error {
+//	ps := vc.State.GetState()
+//	currentPeer := ps.Current
+//	return vc.State.Remove(vc.client, *currentPeer)
+//}
