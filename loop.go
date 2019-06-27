@@ -4,13 +4,13 @@ import (
 	"time"
 )
 
-func FetchLoop(client *StatusGoClient, state *State) {
+func FetchLoop(state *State) {
 	for {
 		select {
 		case <-threadDone:
 			return
 		default:
-			state.Fetch(client)
+			state.Fetch()
 		}
 		<-time.After(interval * time.Second)
 	}

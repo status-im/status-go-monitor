@@ -6,7 +6,7 @@ import (
 
 type PeersState struct {
 	Peers   []Peer
-	Current *Peer
+	Current int
 }
 
 type Model struct {
@@ -14,22 +14,22 @@ type Model struct {
 	State PeersState
 }
 
-type Todo struct {
-	Title string
-	Done  bool
-}
-
-func (todo *Model) Current(state PeersState, peer *Peer) PeersState {
+func (m *Model) Current(state PeersState, peerIndex int) PeersState {
 	return PeersState{
 		Peers:   state.Peers,
-		Current: peer,
+		Current: peerIndex,
 	}
 }
 
-func (todo *Model) Update(state PeersState, peers []Peer) PeersState {
+func (m *Model) Update(state PeersState, peers []Peer) PeersState {
 	current := state.Current
-	if state.Current == nil {
-		current = &peers[0]
+	// if not current peer is set use first one
+	if state.Current == -1 && len(peers) > 0 {
+		current = 0
+	}
+	// if set but doesn't exist in the list move up
+	if state.Current >= len(peers) {
+		current = len(peers) - 1
 	}
 	return PeersState{
 		Peers:   peers,
