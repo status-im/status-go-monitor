@@ -38,7 +38,7 @@ func main() {
 		log.Panicln(err)
 	}
 
-	state := NewState()
+	state := NewState(client)
 	// Subscribe rendering method to state changes
 	state.Store.Subscribe(GenRenderFunc(g, state))
 
@@ -64,8 +64,8 @@ func main() {
 		Binding{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
 		Binding{'k', gocui.ModNone, mainView.CursorUp},
 		Binding{'j', gocui.ModNone, mainView.CursorDown},
-		//Binding{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
-		//Binding{'d', gocui.ModNone, mainView.HandleDelete},
+		Binding{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
+		Binding{'d', gocui.ModNone, mainView.HandleDelete},
 	}
 	infoView := &ViewController{
 		Name:        "info",
@@ -86,7 +86,7 @@ func main() {
 	g.SetManagerFunc(vm.Layout)
 
 	// Start RPC calling routine
-	go FetchLoop(client, state)
+	go FetchLoop(state)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)

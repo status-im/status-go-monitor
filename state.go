@@ -11,16 +11,17 @@ import (
 type State struct {
 	Reducer     *Model
 	Store       *store.Store
+	Client      *StatusGoClient
 	updatePeers *rematch.Action
 	setCurrent  *rematch.Action
 }
 
-func NewState() *State {
+func NewState(client *StatusGoClient) *State {
 	// Generate the reducer from our model
 	Reducer := &Model{
 		State: PeersState{
 			Peers:   make([]Peer, 0),
-			Current: nil,
+			Current: -1, // start with first
 		},
 	}
 	// Instantiate the redux state from the reducer
@@ -28,6 +29,8 @@ func NewState() *State {
 		Reducer: Reducer,
 		// Define the store
 		Store: store.New(Reducer),
+		// Client for RPC calls
+		Client: client,
 		// Define available reducers for the store
 		updatePeers: Reducer.Action(Reducer.Update),
 		setCurrent:  Reducer.Action(Reducer.Current),
@@ -38,30 +41,36 @@ func NewState() *State {
 func (s *State) Update(peers []Peer) {
 	s.Store.Dispatch(s.updatePeers.With(peers))
 }
-func (s *State) SetCurrent(peer *Peer) {
-	s.Store.Dispatch(s.setCurrent.With(peer))
+func (s *State) GetCurrent() *Peer {
+	state := s.GetState()
+	if state.Current == -1 {
+		return nil
+	}
+	return &state.Peers[state.Current]
+}
+func (s *State) SetCurrent(index int) {
+	s.Store.Dispatch(s.setCurrent.With(index))
 }
 func (s *State) GetState() PeersState {
 	return s.Store.StateOf(s.Reducer).(PeersState)
 }
-func (s *State) Fetch(client *StatusGoClient) {
-	peers, err := client.getPeers()
+func (s *State) Fetch() {
+	peers, err := s.Client.getPeers()
 	if err != nil {
 		log.Panicln(err)
 	}
-	log.Printf("peers: %v\n", peers)
 	ps := s.GetState()
 	s.Update(peers)
-	if ps.Current == nil {
-		s.SetCurrent(&peers[0])
+	if ps.Current == -1 {
+		s.SetCurrent(0)
 	}
 }
 
-func (s *State) Remove(client *StatusGoClient, peer Peer) error {
-	success, err := client.removePeer(peer.Enode)
+func (s *State) Remove(peer *Peer) error {
+	success, err := s.Client.removePeer(peer.Enode)
 	if err != nil || success != true {
 		log.Panicln(err)
 	}
-	s.Fetch(client)
+	s.Fetch()
 	return nil
 }

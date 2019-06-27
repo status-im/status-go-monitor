@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/jroimartin/gocui"
@@ -10,10 +9,9 @@ import (
 
 func GenRenderFunc(g *gocui.Gui, state *State) func() {
 	return func() {
-		log.Printf("Rendering!")
 		ps := state.GetState()
 		renderPeers(g, ps.Peers)
-		renderPeerInfo(g, ps.Current)
+		renderPeerInfo(g, state.GetCurrent())
 	}
 }
 
