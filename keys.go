@@ -5,7 +5,7 @@ import (
 )
 
 type Binding struct {
-	Key     gocui.Key
+	Key     interface{} // so both gocui.Key and rune work
 	Mod     gocui.Modifier
 	Handler func(g *gocui.Gui, v *gocui.View) error
 }
