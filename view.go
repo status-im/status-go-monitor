@@ -7,6 +7,8 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+// Default Gocui views arent granular enough
+// so I'm adding a custom one to have more control.
 type ViewController struct {
 	Name        string
 	Title       string
@@ -22,10 +24,11 @@ type ViewController struct {
 	SelBgColor  gocui.Attribute
 	SelFgColor  gocui.Attribute
 	Keybindings []Binding
-	// extra field for view state
+	// Extra field for view state. Might need different name.
 	State *State
 }
 
+// To combine all existing views into one
 type ViewManager struct {
 	g     *gocui.Gui
 	views []*ViewController
