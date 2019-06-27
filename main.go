@@ -52,6 +52,8 @@ func main() {
 		Binding{gocui.KeyCtrlC, gocui.ModNone, quit},
 		Binding{gocui.KeyArrowUp, gocui.ModNone, mainView.CursorUp},
 		Binding{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
+		Binding{gocui.KeyCtrlK, gocui.ModNone, mainView.CursorUp},
+		Binding{gocui.KeyCtrlJ, gocui.ModNone, mainView.CursorDown},
 	}
 	infoView := &ViewController{
 		Name:        "info",
