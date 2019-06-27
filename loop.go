@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-func FetchLoop(state *State) {
+func FetchLoop(state *State, interval int) {
 	for {
 		select {
 		case <-threadDone:
@@ -12,6 +12,6 @@ func FetchLoop(state *State) {
 		default:
 			state.Fetch()
 		}
-		<-time.After(interval * time.Second)
+		<-time.After(time.Duration(interval) * time.Second)
 	}
 }
