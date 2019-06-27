@@ -16,6 +16,7 @@ const interval = 5
 
 var threadDone = make(chan struct{})
 
+// TODO Add command line options
 func main() {
 	// Custom location for log messages
 	clientLogFile, err := os.OpenFile("./app.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
@@ -38,8 +39,9 @@ func main() {
 		log.Panicln(err)
 	}
 
+	// Create a state wrapper.
 	state := NewState(client)
-	// Subscribe rendering method to state changes
+	// Subscribe rendering method to state changes.
 	state.Store.Subscribe(GenRenderFunc(g, state))
 
 	mainView := &ViewController{
@@ -78,6 +80,7 @@ func main() {
 		TopLeft:  func(mx, my int) (int, int) { return 0, (my / 2) + 1 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my - 1 },
 	}
+	// TODO Create a prompt view for user convirmations.
 
 	views := []*ViewController{mainView, infoView}
 

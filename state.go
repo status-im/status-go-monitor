@@ -8,6 +8,8 @@ import (
 	"github.com/dannypsnl/redux/store"
 )
 
+// This might need renaming, since it also contains the Client.
+// I need the client to make the RPC calls.
 type State struct {
 	Reducer     *Model
 	Store       *store.Store
@@ -17,27 +19,27 @@ type State struct {
 }
 
 func NewState(client *StatusGoClient) *State {
-	// Generate the reducer from our model
+	// Generate the reducer from our model.
 	Reducer := &Model{
 		State: PeersState{
 			Peers:   make([]Peer, 0),
-			Current: -1, // start with first
+			Current: -1, // Should mean non selected.
 		},
 	}
-	// Instantiate the redux state from the reducer
+	// Instantiate the redux state from the reducer.
 	return &State{
 		Reducer: Reducer,
-		// Define the store
+		// Define the store.
 		Store: store.New(Reducer),
-		// Client for RPC calls
+		// Client for RPC calls.
 		Client: client,
-		// Define available reducers for the store
+		// Define available reducers for the store.
 		updatePeers: Reducer.Action(Reducer.Update),
 		setCurrent:  Reducer.Action(Reducer.Current),
 	}
 }
 
-// Helpers for shorter calls
+// Helpers for shorter calls.
 func (s *State) Update(peers []Peer) {
 	s.Store.Dispatch(s.updatePeers.With(peers))
 }
@@ -54,6 +56,8 @@ func (s *State) SetCurrent(index int) {
 func (s *State) GetState() PeersState {
 	return s.Store.StateOf(s.Reducer).(PeersState)
 }
+
+// For fetching current state of peers from status-go
 func (s *State) Fetch() {
 	peers, err := s.Client.getPeers()
 	if err != nil {
@@ -66,6 +70,7 @@ func (s *State) Fetch() {
 	}
 }
 
+// For removing a selected peer from connected to status-go
 func (s *State) Remove(peer *Peer) error {
 	success, err := s.Client.removePeer(peer.Enode)
 	if err != nil || success != true {

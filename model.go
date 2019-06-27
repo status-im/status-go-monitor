@@ -15,6 +15,7 @@ type Model struct {
 }
 
 func (m *Model) Current(state PeersState, peerIndex int) PeersState {
+	// NOTE Not sure if I should just ignore invalid values or panic
 	if peerIndex < 0 || peerIndex >= len(state.Peers) {
 		return state
 	}

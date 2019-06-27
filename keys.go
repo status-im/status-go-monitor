@@ -11,11 +11,13 @@ type Binding struct {
 }
 
 func (vc *ViewController) CursorUp(g *gocui.Gui, v *gocui.View) error {
+	// TODO propper error handling?
 	vc.State.SetCurrent(vc.State.GetState().Current - 1)
 	return nil
 }
 
 func (vc *ViewController) CursorDown(g *gocui.Gui, v *gocui.View) error {
+	// TODO propper error handling?
 	vc.State.SetCurrent(vc.State.GetState().Current + 1)
 	return nil
 }
