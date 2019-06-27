@@ -10,6 +10,7 @@ type ViewController struct {
 	Name        string
 	Title       string
 	Placeholder string
+	Wrap        bool
 	Cursor      bool
 	Current     bool
 	Highlight   bool
@@ -38,9 +39,10 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 		if err == nil && err != gocui.ErrUnknownView {
 			return err
 		}
+		v.Title = cfg.Title
+		v.Wrap = cfg.Wrap
 		v.SelFgColor = cfg.SelFgColor
 		v.SelBgColor = cfg.SelBgColor
-		v.Title = cfg.Title
 		v.Highlight = cfg.Highlight
 
 		if cfg.Cursor {
