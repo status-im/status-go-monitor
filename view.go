@@ -42,7 +42,16 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 		x1, y1 := cfg.BotRight(mx, my)
 
 		v, err := g.SetView(cfg.Name, x0, y0, x1, y1)
-		if err != nil && err != gocui.ErrUnknownView {
+		// Some settings can be set only once
+		if err == gocui.ErrUnknownView {
+			cfg.SetKeybindings(g)
+			if cfg.Cursor {
+				v.SetCursor(0, 0)
+			}
+			if cfg.Placeholder != "" {
+				fmt.Fprintln(v, cfg.Placeholder)
+			}
+		} else if err != nil {
 			log.Panicln(err)
 		}
 		v.Title = cfg.Title
@@ -51,17 +60,12 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 		v.SelBgColor = cfg.SelBgColor
 		v.Highlight = cfg.Highlight
 
-		if cfg.Cursor {
-			v.SetCursor(0, 0)
-		}
 		if cfg.Current {
 			g.SetCurrentView(cfg.Name)
 		}
 		if cfg.OnTop {
 			g.SetViewOnTop(cfg.Name)
 		}
-		fmt.Fprintln(v, cfg.Placeholder)
-		cfg.SetKeybindings(g)
 	}
 	return nil
 }
