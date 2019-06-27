@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/jroimartin/gocui"
 )
 
@@ -13,29 +11,28 @@ type Binding struct {
 }
 
 func (vc *ViewController) CursorUp(g *gocui.Gui, v *gocui.View) error {
-	return MoveCursor(-1, v)
+	return MoveCursor(-1, vc, g, v)
 }
 
 func (vc *ViewController) CursorDown(g *gocui.Gui, v *gocui.View) error {
-	peers := vc.State.(*PeersState).list
-	_, cy := v.Cursor()
-	// Don't go beyond available list of peers
-	if cy+1 >= len(peers) {
-		return nil
-	}
-	return MoveCursor(1, v)
+	return MoveCursor(1, vc, g, v)
 }
 
-func MoveCursor(mod int, v *gocui.View) error {
+func MoveCursor(mod int, vc *ViewController, g *gocui.Gui, v *gocui.View) error {
 	if v == nil {
 		return nil
 	}
-	_, my := v.Size()
 	cx, cy := v.Cursor()
-	log.Printf("my: %d, cx: %d, cy: %d", my, cx, cy)
-	if cy+mod < 0 || cy+mod == my {
+	// get peers
+	ps := vc.State.(*PeersState)
+	peers := ps.list
+	// Don't go beyond available list of peers
+	if cy+mod >= len(peers) || cy+mod < 0 {
 		return nil
 	}
+	// update currently selected peer in the list
+	ps.selected = &peers[cy+mod]
+	writePeerDetails(g, ps.selected)
 	if err := v.SetCursor(cx, cy+mod); err != nil {
 		if mod == -1 {
 			return nil

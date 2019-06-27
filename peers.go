@@ -9,8 +9,9 @@ import (
 )
 
 type PeersState struct {
-	c    *client
-	list []Peer
+	c        *client
+	list     []Peer
+	selected *Peer
 }
 
 func NewPeersState(host string, port int) *PeersState {
@@ -41,6 +42,9 @@ func (p *PeersState) Fetch() []Peer {
 		log.Panicln(err)
 	}
 	p.list = peers
+	if p.selected == nil {
+		p.selected = &peers[0]
+	}
 	return peers
 }
 
@@ -55,6 +59,20 @@ func writePeers(g *gocui.Gui, peers []Peer) {
 		for _, peer := range peers {
 			fmt.Fprintf(v, "%s\n", peer.AsTable(maxWidth))
 		}
+		return nil
+	})
+}
+
+func writePeerDetails(g *gocui.Gui, peer *Peer) {
+	g.Update(func(g *gocui.Gui) error {
+		v, err := g.View("info")
+		if err != nil {
+			return err
+		}
+		v.Clear()
+		fmt.Fprintf(v, "Id: %s\nName: %s\nEnode: %s\nCaps: %s",
+			peer.Id, peer.Name, peer.Enode,
+			strings.Join(peer.Caps, ", "))
 		return nil
 	})
 }
@@ -74,10 +92,9 @@ func (p Peer) AsTable(maxWidth int) string {
 	} else {
 		id = p.Id.String()
 	}
-	return fmt.Sprintf("%s｜ %-15s｜ %-21s｜ %-7s｜ %-8s｜ %s",
+	return fmt.Sprintf("%s｜ %-15s｜ %-21s｜ %-7s｜ %-8s",
 		id, p.Name,
 		p.Network.RemoteAddress,
 		boolToString(p.Network.Trusted, "trusted", "normal"),
-		boolToString(p.Network.Static, "static", "dynamic"),
-		strings.Join(p.Caps, ", "))
+		boolToString(p.Network.Static, "static", "dynamic"))
 }
