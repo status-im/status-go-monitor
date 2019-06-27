@@ -18,25 +18,13 @@ type ViewController struct {
 	SelBgColor  gocui.Attribute
 	SelFgColor  gocui.Attribute
 	Keybindings []Binding
-	Manager     ViewManager
-	State       interface{}
+	// extra field for view state
+	State interface{}
 }
 
 type ViewManager struct {
 	g     *gocui.Gui
 	views []*ViewController
-}
-
-func NewViewManager(g *gocui.Gui, views []*ViewController) *ViewManager {
-	vm := ViewManager{
-		g:     g,
-		views: views,
-	}
-	// Attach a ViewManager instance to Views
-	for _, v := range vm.views {
-		v.Manager = vm
-	}
-	return &vm
 }
 
 func (m *ViewManager) Layout(g *gocui.Gui) error {
