@@ -64,6 +64,14 @@ func writePeers(g *gocui.Gui, peers []Peer) {
 	})
 }
 
+func (p *PeersState) Remove(peer Peer) error {
+	success, err := p.c.removePeer(peer.Enode)
+	if err != nil || success != true {
+		log.Panicln(err)
+	}
+	return nil
+}
+
 func writePeerDetails(g *gocui.Gui, peer *Peer) {
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("info")

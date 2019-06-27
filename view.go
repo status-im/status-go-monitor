@@ -42,6 +42,7 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 		x1, y1 := cfg.BotRight(mx, my)
 
 		v, err := g.SetView(cfg.Name, x0, y0, x1, y1)
+
 		// Some settings can be set only once
 		if err == gocui.ErrUnknownView {
 			cfg.SetKeybindings(g)
@@ -54,6 +55,7 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 		} else if err != nil {
 			log.Panicln(err)
 		}
+
 		v.Title = cfg.Title
 		v.Wrap = cfg.Wrap
 		v.SelFgColor = cfg.SelFgColor
