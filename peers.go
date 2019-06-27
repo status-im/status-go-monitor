@@ -31,6 +31,7 @@ func (p *PeersState) FetchLoop(g *gocui.Gui) {
 		default:
 			peers := p.Fetch()
 			writePeers(g, peers)
+			writePeerDetails(g, p.selected)
 		}
 		<-time.After(interval * time.Second)
 	}
