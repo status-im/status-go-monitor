@@ -85,8 +85,8 @@ func main() {
 
 	g.SetManagerFunc(vm.Layout)
 
-	// Start RPC calling routine
-	go FetchLoop(state)
+	// Start RPC calling routine for fetching peers periodically.
+	go FetchLoop(state, interval)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
