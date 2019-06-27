@@ -2,7 +2,7 @@ go.mod
 go.sum
 
 # binary
-status-monitor
+bin/*
 
 # logs
 *.log
