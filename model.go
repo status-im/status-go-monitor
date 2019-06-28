@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dannypsnl/redux/rematch"
+	"github.com/dannypsnl/redux/v2/rematch"
 )
 
 type PeersState struct {
