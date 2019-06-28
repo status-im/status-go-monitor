@@ -5,13 +5,15 @@ import (
 )
 
 func FetchLoop(state *State, interval int) {
+	// Get the first peers fetch going sooner
+	state.Fetch()
+	// Then fetch every `interval` seconds
 	for {
 		select {
 		case <-threadDone:
 			return
-		default:
+		case <-time.After(time.Duration(interval) * time.Second):
 			state.Fetch()
 		}
-		<-time.After(time.Duration(interval) * time.Second)
 	}
 }
