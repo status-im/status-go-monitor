@@ -3,9 +3,8 @@ package main
 import (
 	"log"
 
-	_ "github.com/dannypsnl/redux"
-	"github.com/dannypsnl/redux/rematch"
-	"github.com/dannypsnl/redux/store"
+	"github.com/dannypsnl/redux/v2/rematch"
+	"github.com/dannypsnl/redux/v2/store"
 )
 
 // This might need renaming, since it also contains the Client.
