@@ -7,6 +7,13 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+// Struct for more succint definitions of key bindings
+type Binding struct {
+	Key     interface{} // so both gocui.Key and rune work
+	Mod     gocui.Modifier
+	Handler func(g *gocui.Gui, v *gocui.View) error
+}
+
 // Default Gocui views arent granular enough
 // so I'm adding a custom one to have more control.
 type ViewController struct {
@@ -81,6 +88,27 @@ func (v *ViewController) SetKeybindings(g *gocui.Gui) error {
 		if err := g.SetKeybinding("", b.Key, b.Mod, b.Handler); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (vc *ViewController) CursorUp(g *gocui.Gui, v *gocui.View) error {
+	// TODO propper error handling?
+	vc.State.SetCurrent(vc.State.GetState().Current - 1)
+	return nil
+}
+
+func (vc *ViewController) CursorDown(g *gocui.Gui, v *gocui.View) error {
+	// TODO propper error handling?
+	vc.State.SetCurrent(vc.State.GetState().Current + 1)
+	return nil
+}
+
+func (vc *ViewController) HandleDelete(g *gocui.Gui, v *gocui.View) error {
+	currentPeer := vc.State.GetCurrent()
+	err := vc.State.Remove(currentPeer)
+	if err != nil {
+		return err
 	}
 	return nil
 }
