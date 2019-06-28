@@ -17,7 +17,7 @@ func newClient(url string) (*StatusGoClient, error) {
 }
 
 func (c *StatusGoClient) getPeers() ([]Peer, error) {
-	peers := make([]Peer, 0)
+	var peers []Peer
 	err := c.rpcClient.Call(&peers, "admin_peers")
 	if err != nil {
 		return nil, err
