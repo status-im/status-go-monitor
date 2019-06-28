@@ -47,7 +47,7 @@ func renderPeerInfo(g *gocui.Gui, peer *Peer) {
 		v.Clear()
 		fmt.Fprintf(v, strings.Repeat("%-8s: %v\n", 8),
 			"Name", peer.Name,
-			"ID", string(peer.Id),
+			"ID", string(peer.ID),
 			"Enode", peer.Enode,
 			"Static", peer.Network.Static,
 			"Trusted", peer.Network.Trusted,
@@ -76,9 +76,9 @@ func updatePeerCursor(g *gocui.Gui, current int) {
 func (p Peer) AsTable(maxWidth int) string {
 	var id string
 	if maxWidth > 160 {
-		id = string(p.Id)
+		id = string(p.ID)
 	} else {
-		id = p.Id.String()
+		id = p.ID.String()
 	}
 	return fmt.Sprintf("%s ｜  %-15s ｜  %-21s ｜  %-7s ｜  %-8s",
 		id, p.Name,
