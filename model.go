@@ -16,27 +16,22 @@ type Model struct {
 
 func (m *Model) Current(state PeersState, peerIndex int) PeersState {
 	// NOTE Not sure if I should just ignore invalid values or panic
-	if peerIndex < 0 || peerIndex >= len(state.Peers) {
-		return state
+	if peerIndex >= 0 && peerIndex < len(state.Peers) {
+		state.Current = peerIndex
 	}
-	return PeersState{
-		Peers:   state.Peers,
-		Current: peerIndex,
-	}
+	return state
 }
 
 func (m *Model) Update(state PeersState, peers []Peer) PeersState {
-	current := state.Current
+	// The argument is a copy so we can modify it and return it
+	state.Peers = peers
 	// if not current peer is set use first one
 	if state.Current == -1 && len(peers) > 0 {
-		current = 0
+		state.Current = 0
 	}
 	// if set but doesn't exist in the list move up
 	if state.Current >= len(peers) {
-		current = len(peers) - 1
+		state.Current = len(peers) - 1
 	}
-	return PeersState{
-		Peers:   peers,
-		Current: current,
-	}
+	return state
 }
