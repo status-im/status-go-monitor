@@ -39,6 +39,14 @@ func main() {
 		log.Panicln(err)
 	}
 
+	// Verify the RPC endpoint is available first
+	node, err := client.nodeInfo()
+	if err != nil {
+		log.Panicln(err)
+	}
+	log.Println("Successful connection to:", url)
+	log.Println("Enode:", node.Enode)
+
 	// Create a state wrapper.
 	state := NewState(client)
 	// Subscribe rendering method to state changes.
