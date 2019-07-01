@@ -9,12 +9,12 @@ type PeersState struct {
 	Current int
 }
 
-type Model struct {
+type PeersModel struct {
 	rematch.Reducer
 	State PeersState
 }
 
-func (m *Model) Current(state PeersState, peerIndex int) PeersState {
+func (m *PeersModel) Current(state PeersState, peerIndex int) PeersState {
 	// NOTE Not sure if I should just ignore invalid values or panic
 	if peerIndex >= 0 && peerIndex < len(state.Peers) {
 		state.Current = peerIndex
@@ -22,7 +22,7 @@ func (m *Model) Current(state PeersState, peerIndex int) PeersState {
 	return state
 }
 
-func (m *Model) Update(state PeersState, peers []Peer) PeersState {
+func (m *PeersModel) Update(state PeersState, peers []Peer) PeersState {
 	// The argument is a copy so we can modify it and return it
 	state.Peers = peers
 	// if not current peer is set use first one
