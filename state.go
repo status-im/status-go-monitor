@@ -10,7 +10,7 @@ import (
 // This might need renaming, since it also contains the Client.
 // I need the client to make the RPC calls.
 type State struct {
-	Reducer     *PeersModel
+	Reducer     *AppModel
 	Store       *store.Store
 	Client      *StatusGoClient
 	updatePeers *rematch.Action
@@ -19,8 +19,8 @@ type State struct {
 
 func NewState(client *StatusGoClient) *State {
 	// Generate the reducer from our model.
-	Reducer := &PeersModel{
-		State: PeersState{
+	Reducer := &AppModel{
+		State: AppState{
 			Peers:   make([]Peer, 0),
 			Current: -1, // Should mean non selected.
 		},
@@ -52,8 +52,8 @@ func (s *State) GetCurrent() *Peer {
 func (s *State) SetCurrent(index int) {
 	s.Store.Dispatch(s.setCurrent.With(index))
 }
-func (s *State) GetState() PeersState {
-	return s.Store.StateOf(s.Reducer).(PeersState)
+func (s *State) GetState() AppState {
+	return s.Store.StateOf(s.Reducer).(AppState)
 }
 
 // For fetching current state of peers from status-go
