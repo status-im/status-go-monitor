@@ -4,34 +4,40 @@ import (
 	"github.com/dannypsnl/redux/v2/rematch"
 )
 
-type PeersState struct {
-	Peers   []Peer
-	Current int
+type AppState struct {
+	Node    NodeInfo // info about current node
+	Peers   []Peer   // list of peers for the node
+	Current int      // currently selected peer
 }
 
-type PeersModel struct {
+type AppModel struct {
 	rematch.Reducer
-	State PeersState
+	State AppState
 }
 
-func (m *PeersModel) Current(state PeersState, peerIndex int) PeersState {
+func (m *AppModel) SetInfo(s AppState, node NodeInfo) AppState {
+	s.Node = node
+	return s
+}
+
+func (m *AppModel) Current(s AppState, peerIndex int) AppState {
 	// NOTE Not sure if I should just ignore invalid values or panic
-	if peerIndex >= 0 && peerIndex < len(state.Peers) {
-		state.Current = peerIndex
+	if peerIndex >= 0 && peerIndex < len(s.Peers) {
+		s.Current = peerIndex
 	}
-	return state
+	return s
 }
 
-func (m *PeersModel) Update(state PeersState, peers []Peer) PeersState {
+func (m *AppModel) Update(s AppState, peers []Peer) AppState {
 	// The argument is a copy so we can modify it and return it
-	state.Peers = peers
+	s.Peers = peers
 	// if not current peer is set use first one
-	if state.Current == -1 && len(peers) > 0 {
-		state.Current = 0
+	if s.Current == -1 && len(peers) > 0 {
+		s.Current = 0
 	}
 	// if set but doesn't exist in the list move up
-	if state.Current >= len(peers) {
-		state.Current = len(peers) - 1
+	if s.Current >= len(peers) {
+		s.Current = len(peers) - 1
 	}
-	return state
+	return s
 }
