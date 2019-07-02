@@ -91,6 +91,12 @@ func (v *ViewController) SetKeybindings(g *gocui.Gui) error {
 	return nil
 }
 
+func (vc *ViewController) Refresh(g *gocui.Gui, v *gocui.View) error {
+	// TODO propper error handling?
+	vc.StateCtrl.Fetch()
+	return nil
+}
+
 func (vc *ViewController) CursorUp(g *gocui.Gui, v *gocui.View) error {
 	// TODO propper error handling?
 	current := vc.StateCtrl.State.GetData().Current

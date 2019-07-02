@@ -12,7 +12,7 @@ type rcpResp map[string]interface{}
 
 const host = "127.0.0.1"
 const port = 8545
-const interval = 5
+const interval = 3
 
 var threadDone = make(chan struct{})
 
@@ -71,6 +71,8 @@ func main() {
 		Binding{gocui.KeyCtrlC, gocui.ModNone, quit},
 		Binding{gocui.KeyArrowUp, gocui.ModNone, mainView.CursorUp},
 		Binding{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
+		Binding{'r', gocui.ModNone, mainView.Refresh},
+		Binding{gocui.KeyCtrlL, gocui.ModNone, mainView.Refresh},
 		Binding{'k', gocui.ModNone, mainView.CursorUp},
 		Binding{'j', gocui.ModNone, mainView.CursorDown},
 		Binding{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
