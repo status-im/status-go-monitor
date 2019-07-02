@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-func FetchLoop(state *State, interval int) {
+func FetchLoop(state *AppState, interval int) {
 	// Get the first peers fetch going sooner
 	state.Fetch()
 	// Then fetch every `interval` seconds

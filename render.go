@@ -8,7 +8,7 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
-func GenRenderFunc(g *gocui.Gui, state *State) func() {
+func GenRenderFunc(g *gocui.Gui, state *AppState) func() {
 	return func() {
 		ps := state.GetState()
 		renderPeerList(g, ps.Peers)

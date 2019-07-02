@@ -49,6 +49,7 @@ func main() {
 
 	// Create a state wrapper.
 	state := NewState(client)
+
 	// Subscribe rendering method to state changes.
 	state.Store.Subscribe(GenRenderFunc(g, state))
 
