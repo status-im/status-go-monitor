@@ -32,7 +32,7 @@ type ViewController struct {
 	SelFgColor  gocui.Attribute
 	Keybindings []Binding
 	// Extra field for view state. Might need different name.
-	State *State
+	State *AppState
 }
 
 // To combine all existing views into one

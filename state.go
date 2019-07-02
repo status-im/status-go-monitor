@@ -9,7 +9,7 @@ import (
 
 // This might need renaming, since it also contains the Client.
 // I need the client to make the RPC calls.
-type State struct {
+type AppState struct {
 	Reducer     *AppModel
 	Store       *store.Store
 	Client      *StatusGoClient
@@ -17,16 +17,16 @@ type State struct {
 	setCurrent  *rematch.Action
 }
 
-func NewState(client *StatusGoClient) *State {
+func NewState(client *StatusGoClient) *AppState {
 	// Generate the reducer from our model.
 	Reducer := &AppModel{
-		State: AppState{
+		State: AppData{
 			Peers:   make([]Peer, 0),
 			Current: -1, // Should mean non selected.
 		},
 	}
 	// Instantiate the redux state from the reducer.
-	return &State{
+	return &AppState{
 		Reducer: Reducer,
 		// Define the store.
 		Store: store.New(Reducer),
@@ -39,25 +39,25 @@ func NewState(client *StatusGoClient) *State {
 }
 
 // Helpers for shorter calls.
-func (s *State) Update(peers []Peer) {
+func (s *AppState) Update(peers []Peer) {
 	s.Store.Dispatch(s.updatePeers.With(peers))
 }
-func (s *State) GetCurrent() *Peer {
+func (s *AppState) GetCurrent() *Peer {
 	state := s.GetState()
 	if state.Current == -1 {
 		return nil
 	}
 	return &state.Peers[state.Current]
 }
-func (s *State) SetCurrent(index int) {
+func (s *AppState) SetCurrent(index int) {
 	s.Store.Dispatch(s.setCurrent.With(index))
 }
-func (s *State) GetState() AppState {
-	return s.Store.StateOf(s.Reducer).(AppState)
+func (s *AppState) GetState() AppData {
+	return s.Store.StateOf(s.Reducer).(AppData)
 }
 
 // For fetching current state of peers from status-go
-func (s *State) Fetch() {
+func (s *AppState) Fetch() {
 	peers, err := s.Client.getPeers()
 	if err != nil {
 		log.Panicln(err)
@@ -70,7 +70,7 @@ func (s *State) Fetch() {
 }
 
 // For removing a selected peer from connected to status-go
-func (s *State) Remove(peer *Peer) error {
+func (s *AppState) Remove(peer *Peer) error {
 	success, err := s.Client.removePeer(peer.Enode)
 	if err != nil || success != true {
 		log.Panicln(err)
