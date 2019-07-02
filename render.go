@@ -68,7 +68,7 @@ func updatePeerCursor(g *gocui.Gui, current int) {
 	if err := v.SetCursor(cx, current); err != nil {
 		ox, _ := v.Origin()
 		if err := v.SetOrigin(ox, current); err != nil {
-			log.Panicln("unable to scroll")
+			log.Panicln("unable to scroll:", err)
 		}
 	}
 }
