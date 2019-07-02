@@ -39,19 +39,17 @@ func main() {
 		log.Panicln(err)
 	}
 
-	// Verify the RPC endpoint is available first
-	node, err := client.nodeInfo()
-	if err != nil {
-		log.Panicln(err)
-	}
-	log.Println("Successful connection to:", url)
-	log.Println("Enode:", node.Enode)
-
 	// Create a state wrapper.
-	state := NewState(client)
+	state := NewState()
+
+	// Create a state controller
+	stateCtrl := &StateController{
+		State:  state,
+		Client: client,
+	}
 
 	// Subscribe rendering method to state changes.
-	state.Store.Subscribe(GenRenderFunc(g, state))
+	state.Store.Subscribe(GenRenderFunc(g, stateCtrl))
 
 	mainView := &ViewController{
 		Name:        "main",
@@ -63,7 +61,7 @@ func main() {
 		Current:     true,
 		SelFgColor:  gocui.ColorBlack,
 		SelBgColor:  gocui.ColorGreen,
-		State:       state,
+		StateCtrl:   stateCtrl,
 		// corner positions
 		TopLeft:  func(mx, my int) (int, int) { return 0, 0 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my / 2 },
@@ -84,7 +82,7 @@ func main() {
 		Placeholder: "Loading details...",
 		Enabled:     true,
 		Wrap:        true,
-		State:       state,
+		StateCtrl:   stateCtrl,
 		// corner positions
 		TopLeft:  func(mx, my int) (int, int) { return 0, (my / 2) + 1 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my - 1 },
@@ -98,7 +96,7 @@ func main() {
 	g.SetManagerFunc(vm.Layout)
 
 	// Start RPC calling routine for fetching peers periodically.
-	go FetchLoop(state, interval)
+	go FetchLoop(stateCtrl, interval)
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)

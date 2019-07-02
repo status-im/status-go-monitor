@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/dannypsnl/redux/v2/rematch"
 	"github.com/dannypsnl/redux/v2/store"
 )
@@ -10,14 +8,14 @@ import (
 // This might need renaming, since it also contains the Client.
 // I need the client to make the RPC calls.
 type AppState struct {
-	Reducer     *AppModel
-	Store       *store.Store
-	Client      *StatusGoClient
-	updatePeers *rematch.Action
-	setCurrent  *rematch.Action
+	Reducer        *AppModel
+	Store          *store.Store
+	setNodeInfo    *rematch.Action
+	updatePeers    *rematch.Action
+	setCurrentPeer *rematch.Action
 }
 
-func NewState(client *StatusGoClient) *AppState {
+func NewState() *AppState {
 	// Generate the reducer from our model.
 	Reducer := &AppModel{
 		State: AppData{
@@ -30,51 +28,34 @@ func NewState(client *StatusGoClient) *AppState {
 		Reducer: Reducer,
 		// Define the store.
 		Store: store.New(Reducer),
-		// Client for RPC calls.
-		Client: client,
 		// Define available reducers for the store.
-		updatePeers: Reducer.Action(Reducer.Update),
-		setCurrent:  Reducer.Action(Reducer.Current),
+		setNodeInfo:    Reducer.Action(Reducer.SetInfo),
+		updatePeers:    Reducer.Action(Reducer.Update),
+		setCurrentPeer: Reducer.Action(Reducer.Current),
 	}
 }
 
 // Helpers for shorter calls.
-func (s *AppState) Update(peers []Peer) {
+func (s *AppState) UpdateInfo(info NodeInfo) {
+	s.Store.Dispatch(s.setNodeInfo.With(info))
+}
+
+func (s *AppState) UpdatePeers(peers []Peer) {
 	s.Store.Dispatch(s.updatePeers.With(peers))
 }
+
 func (s *AppState) GetCurrent() *Peer {
-	state := s.GetState()
+	state := s.GetData()
 	if state.Current == -1 {
 		return nil
 	}
 	return &state.Peers[state.Current]
 }
-func (s *AppState) SetCurrent(index int) {
-	s.Store.Dispatch(s.setCurrent.With(index))
+
+func (s *AppState) SetCurrentPeer(index int) {
+	s.Store.Dispatch(s.setCurrentPeer.With(index))
 }
-func (s *AppState) GetState() AppData {
+
+func (s *AppState) GetData() AppData {
 	return s.Store.StateOf(s.Reducer).(AppData)
-}
-
-// For fetching current state of peers from status-go
-func (s *AppState) Fetch() {
-	peers, err := s.Client.getPeers()
-	if err != nil {
-		log.Panicln(err)
-	}
-	ps := s.GetState()
-	s.Update(peers)
-	if ps.Current == -1 {
-		s.SetCurrent(0)
-	}
-}
-
-// For removing a selected peer from connected to status-go
-func (s *AppState) Remove(peer *Peer) error {
-	success, err := s.Client.removePeer(peer.Enode)
-	if err != nil || success != true {
-		log.Panicln(err)
-	}
-	s.Fetch()
-	return nil
 }

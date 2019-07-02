@@ -32,7 +32,7 @@ type ViewController struct {
 	SelFgColor  gocui.Attribute
 	Keybindings []Binding
 	// Extra field for view state. Might need different name.
-	State *AppState
+	StateCtrl *StateController
 }
 
 // To combine all existing views into one
@@ -84,7 +84,6 @@ func (m *ViewManager) Layout(g *gocui.Gui) error {
 
 func (v *ViewController) SetKeybindings(g *gocui.Gui) error {
 	for _, b := range v.Keybindings {
-		// IDEA: I can pass a method instead of a function here
 		if err := g.SetKeybinding("", b.Key, b.Mod, b.Handler); err != nil {
 			return err
 		}
@@ -94,19 +93,21 @@ func (v *ViewController) SetKeybindings(g *gocui.Gui) error {
 
 func (vc *ViewController) CursorUp(g *gocui.Gui, v *gocui.View) error {
 	// TODO propper error handling?
-	vc.State.SetCurrent(vc.State.GetState().Current - 1)
+	current := vc.StateCtrl.State.GetData().Current
+	vc.StateCtrl.State.SetCurrentPeer(current - 1)
 	return nil
 }
 
 func (vc *ViewController) CursorDown(g *gocui.Gui, v *gocui.View) error {
 	// TODO propper error handling?
-	vc.State.SetCurrent(vc.State.GetState().Current + 1)
+	current := vc.StateCtrl.State.GetData().Current
+	vc.StateCtrl.State.SetCurrentPeer(current + 1)
 	return nil
 }
 
 func (vc *ViewController) HandleDelete(g *gocui.Gui, v *gocui.View) error {
-	currentPeer := vc.State.GetCurrent()
-	err := vc.State.Remove(currentPeer)
+	currentPeer := vc.StateCtrl.State.GetCurrent()
+	err := vc.StateCtrl.RemovePeer(currentPeer)
 	if err != nil {
 		return err
 	}
