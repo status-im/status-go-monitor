@@ -46,6 +46,6 @@ func (s *StateController) GetInfo() error {
 	if err != nil {
 		return err
 	}
-	s.State.UpdateInfo(*info)
+	s.State.UpdateInfo(info)
 	return nil
 }
