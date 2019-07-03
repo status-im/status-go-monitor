@@ -25,8 +25,11 @@ func (s *StateController) Fetch() {
 // For removing a selected peer from connected to status-go
 func (s *StateController) TrustPeer(peer *Peer) error {
 	success, err := s.Client.trustPeer(peer.Enode)
-	if err != nil || success != true {
+	if err != nil {
 		log.Panicln(err)
+	}
+	if success != true {
+		log.Panicln("failed to trust whisper peer")
 	}
 	return nil
 }
@@ -34,8 +37,11 @@ func (s *StateController) TrustPeer(peer *Peer) error {
 // For removing a selected peer from connected to status-go
 func (s *StateController) RemovePeer(peer *Peer) error {
 	success, err := s.Client.removePeer(peer.Enode)
-	if err != nil || success != true {
+	if err != nil {
 		log.Panicln(err)
+	}
+	if success != true {
+		log.Panicln("failed to remove peer")
 	}
 	s.Fetch()
 	return nil
