@@ -13,7 +13,7 @@ type NodeInfo struct {
 }
 
 type NodeInfoPorts struct {
-	Discovery int `json:"discovert"`
+	Discovery int `json:"discovery"`
 	Listener  int `json:"listener"`
 }
 
