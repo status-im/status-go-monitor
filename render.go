@@ -18,15 +18,16 @@ func GenRenderFunc(g *gocui.Gui, sc *StateController) func() {
 }
 
 func renderPeerList(g *gocui.Gui, peers []Peer) {
-	if len(peers) == 0 {
-		return
-	}
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("main")
 		if err != nil {
 			return err
 		}
 		v.Clear()
+		if len(peers) == 0 {
+			fmt.Fprintf(v, "No peers found.\n")
+			return nil
+		}
 		maxWidth, _ := g.Size()
 		for _, peer := range peers {
 			fmt.Fprintf(v, "%s\n", peer.AsTable(maxWidth))
@@ -36,15 +37,16 @@ func renderPeerList(g *gocui.Gui, peers []Peer) {
 }
 
 func renderPeerInfo(g *gocui.Gui, peer *Peer) {
-	if peer == nil {
-		return
-	}
 	g.Update(func(g *gocui.Gui) error {
 		v, err := g.View("info")
 		if err != nil {
 			return err
 		}
 		v.Clear()
+		if peer == nil {
+			fmt.Fprintf(v, "No peer selected.")
+			return nil
+		}
 		fmt.Fprintf(v, strings.Repeat("%-8s: %v\n", 8),
 			"Name", peer.Name,
 			"ID", string(peer.ID),
@@ -59,12 +61,15 @@ func renderPeerInfo(g *gocui.Gui, peer *Peer) {
 }
 
 func updatePeerCursor(g *gocui.Gui, current int) {
+	// no need to move cursor if nothing is selected
+	if current < 0 {
+		return
+	}
 	v, err := g.View("main")
 	if err != nil {
 		log.Panicln("unable to find main view")
 	}
 	cx, _ := v.Cursor()
-
 	if err := v.SetCursor(cx, current); err != nil {
 		ox, _ := v.Origin()
 		if err := v.SetOrigin(ox, current); err != nil {
