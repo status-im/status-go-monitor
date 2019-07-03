@@ -1,13 +1,25 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/dannypsnl/redux/v2/rematch"
 )
 
 type AppData struct {
-	Node    NodeInfo // info about current node
-	Peers   []Peer   // list of peers for the node
-	Current int      // currently selected peer
+	Node    *NodeInfo // info about current node
+	Peers   []Peer    // list of peers for the node
+	Current int       // currently selected peer
+}
+
+func (d AppData) String() string {
+	peers := make([]string, len(d.Peers))
+	for i, p := range d.Peers {
+		peers[i] = p.String()
+	}
+	return fmt.Sprintf("AppData{Node: %v, Current: %d, Peers: [%v]}",
+		d.Node, d.Current, strings.Join(peers, ","))
 }
 
 type AppModel struct {
@@ -16,7 +28,7 @@ type AppModel struct {
 }
 
 func (m *AppModel) SetInfo(s AppData, node NodeInfo) AppData {
-	s.Node = node
+	s.Node = &node
 	return s
 }
 
