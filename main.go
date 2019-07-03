@@ -77,6 +77,7 @@ func main() {
 		Binding{'j', gocui.ModNone, mainView.CursorDown},
 		Binding{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
 		Binding{'d', gocui.ModNone, mainView.HandleDelete},
+		Binding{'t', gocui.ModNone, mainView.HandleTrust},
 	}
 	infoView := &ViewController{
 		Name:        "info",

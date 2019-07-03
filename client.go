@@ -42,3 +42,12 @@ func (c *StatusGoClient) removePeer(enode string) (bool, error) {
 	}
 	return rval, nil
 }
+
+func (c *StatusGoClient) trustPeer(enode string) (bool, error) {
+	var rval bool
+	err := c.rpcClient.Call(&rval, "shh_markTrustedPeer", enode)
+	if err != nil {
+		return false, err
+	}
+	return rval, nil
+}

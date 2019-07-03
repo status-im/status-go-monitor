@@ -119,3 +119,12 @@ func (vc *ViewController) HandleDelete(g *gocui.Gui, v *gocui.View) error {
 	}
 	return nil
 }
+
+func (vc *ViewController) HandleTrust(g *gocui.Gui, v *gocui.View) error {
+	currentPeer := vc.StateCtrl.State.GetCurrent()
+	err := vc.StateCtrl.TrustPeer(currentPeer)
+	if err != nil {
+		return err
+	}
+	return nil
+}
