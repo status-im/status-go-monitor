@@ -3,7 +3,7 @@ default: status-monitor
 run:
 	go run ./*.go
 
-status-monitor:
+build:
 	go build -o bin/status-monitor
 
 clean:
