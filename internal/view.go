@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"fmt"
@@ -37,14 +37,14 @@ type ViewController struct {
 
 // To combine all existing views into one
 type ViewManager struct {
-	g     *gocui.Gui
-	views []*ViewController
+	Gui   *gocui.Gui
+	Views []*ViewController
 }
 
 func (m *ViewManager) Layout(g *gocui.Gui) error {
 	mx, my := g.Size()
 
-	for _, cfg := range m.views {
+	for _, cfg := range m.Views {
 		if !cfg.Enabled {
 			continue
 		}
