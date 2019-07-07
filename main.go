@@ -68,16 +68,16 @@ func main() {
 	}
 	// bindings defined separately so handlers can reference mainView
 	mainView.Keybindings = []Binding{
-		Binding{gocui.KeyCtrlC, gocui.ModNone, quit},
-		Binding{gocui.KeyArrowUp, gocui.ModNone, mainView.CursorUp},
-		Binding{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
-		Binding{'r', gocui.ModNone, mainView.Refresh},
-		Binding{gocui.KeyCtrlL, gocui.ModNone, mainView.Refresh},
-		Binding{'k', gocui.ModNone, mainView.CursorUp},
-		Binding{'j', gocui.ModNone, mainView.CursorDown},
-		Binding{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
-		Binding{'d', gocui.ModNone, mainView.HandleDelete},
-		Binding{'t', gocui.ModNone, mainView.HandleTrust},
+		{gocui.KeyCtrlC, gocui.ModNone, quit},
+		{gocui.KeyArrowUp, gocui.ModNone, mainView.CursorUp},
+		{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
+		{'r', gocui.ModNone, mainView.Refresh},
+		{gocui.KeyCtrlL, gocui.ModNone, mainView.Refresh},
+		{'k', gocui.ModNone, mainView.CursorUp},
+		{'j', gocui.ModNone, mainView.CursorDown},
+		{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
+		{'d', gocui.ModNone, mainView.HandleDelete},
+		{'t', gocui.ModNone, mainView.HandleTrust},
 	}
 	infoView := &ViewController{
 		Name:        "info",
