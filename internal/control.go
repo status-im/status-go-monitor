@@ -4,12 +4,13 @@ import (
 	"log"
 )
 
+// StateController is the central point for state control
 type StateController struct {
 	State  *AppState
 	Client *StatusGoClient
 }
 
-// For fetching current state of peers from status-go
+// Fetch for getting current state of peers from status-go
 func (s *StateController) Fetch() {
 	peers, err := s.Client.getPeers()
 	if err != nil {
@@ -22,7 +23,7 @@ func (s *StateController) Fetch() {
 	}
 }
 
-// For removing a selected peer from connected to status-go
+// TrustPeer marking the selected whisper peer as trusted
 func (s *StateController) TrustPeer(peer *Peer) error {
 	success, err := s.Client.trustPeer(peer.Enode)
 	if err != nil {
@@ -34,7 +35,7 @@ func (s *StateController) TrustPeer(peer *Peer) error {
 	return nil
 }
 
-// For removing a selected peer from connected to status-go
+// RemovePeer for removing a selected peer from connected to status-go
 func (s *StateController) RemovePeer(peer *Peer) error {
 	success, err := s.Client.removePeer(peer.Enode)
 	if err != nil {
@@ -47,6 +48,7 @@ func (s *StateController) RemovePeer(peer *Peer) error {
 	return nil
 }
 
+// GetInfo for getting information about current connected to node
 func (s *StateController) GetInfo() error {
 	info, err := s.Client.nodeInfo()
 	if err != nil {
