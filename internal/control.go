@@ -38,11 +38,9 @@ func (s *StateController) TrustPeer(peer *Peer) error {
 // RemovePeer for removing a selected peer from connected to status-go
 func (s *StateController) RemovePeer(peer *Peer) error {
 	success, err := s.Client.removePeer(peer.Enode)
-	if err != nil {
-		log.Panicln(err)
-	}
-	if success != true {
-		log.Panicln("failed to remove peer")
+	if err != nil || success != true {
+		log.Panicln("failed to remove peer:", err)
+		return err
 	}
 	s.Fetch()
 	return nil
