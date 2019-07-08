@@ -138,4 +138,7 @@ func (vm *ViewManager) AddView(vc *ViewController) {
 
 func (vm *ViewManager) RemoveView(vc *ViewController) {
 	delete(vm.Views, vc.Name)
+	if vm.Current == vc.Name {
+		vm.Current = vm.Views["main"].Name
+	}
 }

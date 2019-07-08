@@ -39,8 +39,12 @@ func (vm *ViewManager) HandleDelete(g *G.Gui, v *G.View) error {
 	if err != nil {
 		return err
 	}
-	currentPeer := vc.StateCtrl.State.GetCurrent()
-	if err := vc.StateCtrl.RemovePeer(currentPeer); err != nil {
+	handler := func() (err error) {
+		currentPeer := vc.StateCtrl.State.GetCurrent()
+		err = vc.StateCtrl.RemovePeer(currentPeer)
+		return
+	}
+	if err := createConfirmView(vm, "Delete this peer?", handler); err != nil {
 		return err
 	}
 	return nil

@@ -6,7 +6,7 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
-// Rhread ending channel
+// Thread ending channel
 var threadDone = make(chan struct{})
 
 func FetchLoop(s *StateController, interval int) {
