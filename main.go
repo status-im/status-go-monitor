@@ -1,23 +1,24 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/jroimartin/gocui"
+	G "github.com/jroimartin/gocui"
+
+	"github.com/status-im/status-go-monitor/internal"
 )
 
 type rcpResp map[string]interface{}
 
-const host = "127.0.0.1"
-const port = 8545
-const interval = 3
-
-var threadDone = make(chan struct{})
-
-// TODO Add command line options
 func main() {
+	rpcAddr := flag.String("rpc-addr", "127.0.0.1", "IP address of the status-go RPC endpoint.")
+	rpcPort := flag.Int("rpc-port", 8545, "TCP port of the status-go RPC endpoint. ")
+	interval := flag.Int("interval", 3, "Interval in seconds for querying for list of peers.")
+	flag.Parse()
+
 	// Custom location for log messages
 	clientLogFile, err := os.OpenFile("./app.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
@@ -26,87 +27,88 @@ func main() {
 	log.SetOutput(clientLogFile)
 
 	// Core object for the Terminal UI
-	g, err := gocui.NewGui(gocui.OutputNormal)
+	g, err := G.NewGui(G.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
 	}
+	// Allow for handling of Escape key
+	g.InputEsc = true
 	defer g.Close()
 
 	// Client necessary for doing RPC calls to status-go
-	url := fmt.Sprintf("http://%s:%d", host, port)
-	client, err := newClient(url)
+	url := fmt.Sprintf("http://%s:%d", *rpcAddr, *rpcPort)
+	client, err := internal.NewClient(url)
 	if err != nil {
 		log.Panicln(err)
 	}
 
 	// Create a state wrapper.
-	state := NewState()
+	state := internal.NewState()
 
 	// Create a state controller
-	stateCtrl := &StateController{
+	sc := &internal.StateController{
 		State:  state,
 		Client: client,
 	}
 
-	// Subscribe rendering method to state changes.
-	state.Store.Subscribe(GenRenderFunc(g, stateCtrl))
+	// Create ViewManager without views to use in key bindings
+	vm := internal.ViewManager{Control: sc}
 
-	mainView := &ViewController{
+	// Main view with list of peers
+	mainView := &internal.ViewController{
 		Name:        "main",
 		Title:       "Peers",
 		Placeholder: "Loading peers...",
-		Enabled:     true,
 		Cursor:      true,
 		Highlight:   true,
-		Current:     true,
-		SelFgColor:  gocui.ColorBlack,
-		SelBgColor:  gocui.ColorGreen,
-		StateCtrl:   stateCtrl,
+		SelFgColor:  G.ColorBlack,
+		SelBgColor:  G.ColorGreen,
 		// corner positions
 		TopLeft:  func(mx, my int) (int, int) { return 0, 0 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my / 2 },
 	}
 	// bindings defined separately so handlers can reference mainView
-	mainView.Keybindings = []Binding{
-		{gocui.KeyCtrlC, gocui.ModNone, quit},
-		{gocui.KeyArrowUp, gocui.ModNone, mainView.CursorUp},
-		{gocui.KeyArrowDown, gocui.ModNone, mainView.CursorDown},
-		{'r', gocui.ModNone, mainView.Refresh},
-		{gocui.KeyCtrlL, gocui.ModNone, mainView.Refresh},
-		{'k', gocui.ModNone, mainView.CursorUp},
-		{'j', gocui.ModNone, mainView.CursorDown},
-		{gocui.KeyDelete, gocui.ModNone, mainView.HandleDelete},
-		{'d', gocui.ModNone, mainView.HandleDelete},
-		{'t', gocui.ModNone, mainView.HandleTrust},
+	mainView.Keybindings = []internal.Binding{
+		{G.KeyCtrlL, vm.Refresh},
+		{'r', vm.Refresh},
+		{G.KeyArrowUp, vm.CursorUp},
+		{G.KeyArrowDown, vm.CursorDown},
+		{'k', vm.CursorUp},
+		{'j', vm.CursorDown},
+		{G.KeyDelete, vm.HandleDelete},
+		{'d', vm.HandleDelete},
+		{'t', vm.HandleTrust},
 	}
-	infoView := &ViewController{
+	// For viewing peer details
+	infoView := &internal.ViewController{
 		Name:        "info",
 		Title:       "Details",
 		Placeholder: "Loading details...",
-		Enabled:     true,
 		Wrap:        true,
-		StateCtrl:   stateCtrl,
+		OnTop:       true,
 		// corner positions
 		TopLeft:  func(mx, my int) (int, int) { return 0, (my / 2) + 1 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my - 1 },
 	}
-	// TODO Create a prompt view for user convirmations.
 
-	views := []*ViewController{mainView, infoView}
+	// We attach views later so key bindings can access vm
+	vm.Views = map[string]*internal.ViewController{
+		"main": mainView,
+		"info": infoView,
+	}
 
-	vm := ViewManager{g: g, views: views}
+	// Set the starting current view
+	vm.Current = mainView.Name
 
 	g.SetManagerFunc(vm.Layout)
 
-	// Start RPC calling routine for fetching peers periodically.
-	go FetchLoop(stateCtrl, interval)
+	// Subscribe rendering method to state changes.
+	state.Store.Subscribe(internal.GenRenderFunc(g, sc))
 
-	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+	// Start RPC calling routine for fetching peers periodically.
+	go internal.FetchLoop(sc, *interval)
+
+	if err := g.MainLoop(); err != nil && err != G.ErrQuit {
 		log.Panicln(err)
 	}
-}
-
-func quit(g *gocui.Gui, v *gocui.View) error {
-	close(threadDone)
-	return gocui.ErrQuit
 }

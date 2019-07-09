@@ -21,8 +21,5 @@ And use it from the `bin` folder:
 
 # TODO
 
-* Command line options for connecting to `status-go`
-* Confirmation dialogs for actions on peers
 * Syncing of mailservers
 * Info about current node
-* Help screen / bindings list

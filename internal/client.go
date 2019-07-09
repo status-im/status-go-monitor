@@ -1,14 +1,16 @@
-package main
+package internal
 
 import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
+// StatusGoClient holds RPC client and manages interaction with status-go RPC
 type StatusGoClient struct {
 	rpcClient *rpc.Client
 }
 
-func newClient(url string) (*StatusGoClient, error) {
+// NewClient creates new insteance of RPC client
+func NewClient(url string) (*StatusGoClient, error) {
 	rpcClient, err := rpc.Dial(url)
 	if err != nil {
 		return nil, err

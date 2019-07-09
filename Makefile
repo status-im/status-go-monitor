@@ -1,4 +1,4 @@
-default: status-monitor
+default: build
 
 run:
 	go run ./*.go
