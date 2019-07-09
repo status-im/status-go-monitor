@@ -30,6 +30,8 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
+	// Allow for handling of Escape key
+	g.InputEsc = true
 	defer g.Close()
 
 	// Client necessary for doing RPC calls to status-go

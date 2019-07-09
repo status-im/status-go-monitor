@@ -39,9 +39,6 @@ type ViewManager struct {
 }
 
 func (vm *ViewManager) Layout(g *G.Gui) error {
-	// Allow for handling of Escape key
-	g.InputEsc = true
-
 	// Add global key-bindings for help
 	help := func(g *G.Gui, v *G.View) error {
 		return createHelpView(vm)

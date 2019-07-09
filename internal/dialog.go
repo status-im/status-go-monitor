@@ -38,7 +38,7 @@ func createConfirmView(vm *ViewManager, text string, handler func() error) error
 	vc.Keybindings = []Binding{
 		{'y', confirm},
 		{'n', destroy},
-		{'u', destroy},
+		{'q', destroy},
 		{G.KeyEsc, destroy},
 	}
 	vm.AddView(vc)
@@ -60,7 +60,7 @@ func createHelpView(vm *ViewManager) error {
 		return nil
 	}
 	vc.Keybindings = []Binding{
-		{'u', destroy},
+		{'q', destroy},
 		{G.KeyEsc, destroy},
 	}
 	vm.AddView(vc)
