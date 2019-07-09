@@ -6,42 +6,26 @@ import (
 
 // Key handlers beyond this point
 func (vm *ViewManager) Refresh(g *G.Gui, v *G.View) error {
-	vc, err := vm.GetViewCtrl(v)
-	if err != nil {
-		return err
-	}
-	vc.StateCtrl.Fetch()
+	vm.Control.Fetch()
 	return nil
 }
 
 func (vm *ViewManager) CursorUp(g *G.Gui, v *G.View) error {
-	vc, err := vm.GetViewCtrl(v)
-	if err != nil {
-		return err
-	}
-	current := vc.StateCtrl.State.GetData().Current
-	vc.StateCtrl.State.SetCurrentPeer(current - 1)
+	current := vm.Control.State.GetData().Current
+	vm.Control.State.SetCurrentPeer(current - 1)
 	return nil
 }
 
 func (vm *ViewManager) CursorDown(g *G.Gui, v *G.View) error {
-	vc, err := vm.GetViewCtrl(v)
-	if err != nil {
-		return err
-	}
-	current := vc.StateCtrl.State.GetData().Current
-	vc.StateCtrl.State.SetCurrentPeer(current + 1)
+	current := vm.Control.State.GetData().Current
+	vm.Control.State.SetCurrentPeer(current + 1)
 	return nil
 }
 
 func (vm *ViewManager) HandleDelete(g *G.Gui, v *G.View) error {
-	vc, err := vm.GetViewCtrl(v)
-	if err != nil {
-		return err
-	}
 	handler := func() (err error) {
-		currentPeer := vc.StateCtrl.State.GetCurrent()
-		err = vc.StateCtrl.RemovePeer(currentPeer)
+		currentPeer := vm.Control.State.GetCurrent()
+		err = vm.Control.RemovePeer(currentPeer)
 		return
 	}
 	if err := createConfirmView(vm, "Delete this peer?", handler); err != nil {
@@ -51,31 +35,9 @@ func (vm *ViewManager) HandleDelete(g *G.Gui, v *G.View) error {
 }
 
 func (vm *ViewManager) HandleTrust(g *G.Gui, v *G.View) error {
-	vc, err := vm.GetViewCtrl(v)
-	if err != nil {
+	currentPeer := vm.Control.State.GetCurrent()
+	if err := vm.Control.TrustPeer(currentPeer); err != nil {
 		return err
 	}
-	currentPeer := vc.StateCtrl.State.GetCurrent()
-	if err := vc.StateCtrl.TrustPeer(currentPeer); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (vm *ViewManager) HandleEscape(g *G.Gui, v *G.View) error {
-	vc, err := vm.GetViewCtrl(v)
-	if err != nil {
-		return err
-	}
-	vc.OnTop = false
-	return nil
-}
-
-func (vm *ViewManager) ShowHelp(g *G.Gui, v *G.View) error {
-	vc, err := vm.GetViewCtrl(v)
-	if err != nil {
-		return err
-	}
-	vc.OnTop = true
 	return nil
 }

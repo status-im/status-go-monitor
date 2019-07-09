@@ -42,17 +42,17 @@ func main() {
 		log.Panicln(err)
 	}
 
-	// Create ViewManager without views to use in key bindings
-	vm := internal.ViewManager{Gui: g}
-
 	// Create a state wrapper.
 	state := internal.NewState()
 
 	// Create a state controller
-	stateCtrl := &internal.StateController{
+	sc := &internal.StateController{
 		State:  state,
 		Client: client,
 	}
+
+	// Create ViewManager without views to use in key bindings
+	vm := internal.ViewManager{Control: sc}
 
 	// Main view with list of peers
 	mainView := &internal.ViewController{
@@ -63,7 +63,6 @@ func main() {
 		Highlight:   true,
 		SelFgColor:  G.ColorBlack,
 		SelBgColor:  G.ColorGreen,
-		StateCtrl:   stateCtrl,
 		// corner positions
 		TopLeft:  func(mx, my int) (int, int) { return 0, 0 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my / 2 },
@@ -87,7 +86,6 @@ func main() {
 		Placeholder: "Loading details...",
 		Wrap:        true,
 		OnTop:       true,
-		StateCtrl:   stateCtrl,
 		// corner positions
 		TopLeft:  func(mx, my int) (int, int) { return 0, (my / 2) + 1 },
 		BotRight: func(mx, my int) (int, int) { return mx - 1, my - 1 },
@@ -105,10 +103,10 @@ func main() {
 	g.SetManagerFunc(vm.Layout)
 
 	// Subscribe rendering method to state changes.
-	state.Store.Subscribe(internal.GenRenderFunc(g, stateCtrl))
+	state.Store.Subscribe(internal.GenRenderFunc(g, sc))
 
 	// Start RPC calling routine for fetching peers periodically.
-	go internal.FetchLoop(stateCtrl, *interval)
+	go internal.FetchLoop(sc, *interval)
 
 	if err := g.MainLoop(); err != nil && err != G.ErrQuit {
 		log.Panicln(err)

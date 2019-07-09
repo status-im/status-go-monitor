@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
@@ -28,14 +27,13 @@ type ViewController struct {
 	SelBgColor  G.Attribute
 	SelFgColor  G.Attribute
 	Keybindings []Binding
-	StateCtrl   *StateController
 }
 
 // To combine all existing views into one
 type ViewManager struct {
-	Gui     *G.Gui
 	Views   map[string]*ViewController
 	Current string
+	Control *StateController
 }
 
 func (vm *ViewManager) Layout(g *G.Gui) error {
@@ -118,15 +116,6 @@ func SetKeybindings(name string, bindings []Binding, g *G.Gui) error {
 		}
 	}
 	return nil
-}
-
-func (vm *ViewManager) GetViewCtrl(v *G.View) (*ViewController, error) {
-	for _, vc := range vm.Views {
-		if vc.Name == v.Name() {
-			return vc, nil
-		}
-	}
-	return nil, errors.New("failed to find ViewController")
 }
 
 func (vm *ViewManager) AddView(vc *ViewController) {
