@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -12,12 +13,12 @@ import (
 
 type rcpResp map[string]interface{}
 
-const host = "127.0.0.1"
-const port = 8545
-const interval = 3
-
-// TODO Add command line options
 func main() {
+	rpcAddr := flag.String("rpc-addr", "127.0.0.1", "IP address of the status-go RPC endpoint.")
+	rpcPort := flag.Int("rpc-port", 8545, "TCP port of the status-go RPC endpoint. ")
+	interval := flag.Int("interval", 3, "Interval in seconds for querying for list of peers.")
+	flag.Parse()
+
 	// Custom location for log messages
 	clientLogFile, err := os.OpenFile("./app.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
@@ -35,7 +36,7 @@ func main() {
 	defer g.Close()
 
 	// Client necessary for doing RPC calls to status-go
-	url := fmt.Sprintf("http://%s:%d", host, port)
+	url := fmt.Sprintf("http://%s:%d", *rpcAddr, *rpcPort)
 	client, err := internal.NewClient(url)
 	if err != nil {
 		log.Panicln(err)
@@ -107,7 +108,7 @@ func main() {
 	state.Store.Subscribe(internal.GenRenderFunc(g, stateCtrl))
 
 	// Start RPC calling routine for fetching peers periodically.
-	go internal.FetchLoop(stateCtrl, interval)
+	go internal.FetchLoop(stateCtrl, *interval)
 
 	if err := g.MainLoop(); err != nil && err != G.ErrQuit {
 		log.Panicln(err)
