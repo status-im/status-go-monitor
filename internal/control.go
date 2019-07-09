@@ -16,10 +16,10 @@ func (s *StateController) Fetch() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	ps := s.State.GetData()
-	s.State.UpdatePeers(peers)
+	ps := s.GetData()
+	s.UpdatePeers(peers)
 	if ps.Current == -1 {
-		s.State.SetCurrentPeer(0)
+		s.SetCurrentPeer(0)
 	}
 }
 
@@ -52,6 +52,31 @@ func (s *StateController) GetInfo() error {
 	if err != nil {
 		return err
 	}
-	s.State.UpdateInfo(info)
+	s.UpdateInfo(info)
 	return nil
+}
+
+// Helpers for shorter calls.
+func (s *StateController) UpdateInfo(info NodeInfo) {
+	s.State.Store.Dispatch(s.State.setNodeInfo.With(info))
+}
+
+func (s *StateController) UpdatePeers(peers []Peer) {
+	s.State.Store.Dispatch(s.State.updatePeers.With(peers))
+}
+
+func (s *StateController) GetCurrent() *Peer {
+	state := s.GetData()
+	if state.Current == -1 {
+		return nil
+	}
+	return &state.Peers[state.Current]
+}
+
+func (s *StateController) SetCurrentPeer(index int) {
+	s.State.Store.Dispatch(s.State.setCurrentPeer.With(index))
+}
+
+func (s *StateController) GetData() AppData {
+	return s.State.Store.StateOf(s.State.Reducer).(AppData)
 }

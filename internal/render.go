@@ -10,9 +10,9 @@ import (
 
 func GenRenderFunc(g *gocui.Gui, sc *StateController) func() {
 	return func() {
-		ps := sc.State.GetData()
+		ps := sc.GetData()
 		renderPeerList(g, ps.Peers)
-		renderPeerInfo(g, sc.State.GetCurrent())
+		renderPeerInfo(g, sc.GetCurrent())
 		updatePeerCursor(g, ps.Current)
 	}
 }

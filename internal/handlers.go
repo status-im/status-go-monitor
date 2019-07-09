@@ -11,20 +11,20 @@ func (vm *ViewManager) Refresh(g *G.Gui, v *G.View) error {
 }
 
 func (vm *ViewManager) CursorUp(g *G.Gui, v *G.View) error {
-	current := vm.Control.State.GetData().Current
-	vm.Control.State.SetCurrentPeer(current - 1)
+	current := vm.Control.GetData().Current
+	vm.Control.SetCurrentPeer(current - 1)
 	return nil
 }
 
 func (vm *ViewManager) CursorDown(g *G.Gui, v *G.View) error {
-	current := vm.Control.State.GetData().Current
-	vm.Control.State.SetCurrentPeer(current + 1)
+	current := vm.Control.GetData().Current
+	vm.Control.SetCurrentPeer(current + 1)
 	return nil
 }
 
 func (vm *ViewManager) HandleDelete(g *G.Gui, v *G.View) error {
 	handler := func() (err error) {
-		currentPeer := vm.Control.State.GetCurrent()
+		currentPeer := vm.Control.GetCurrent()
 		err = vm.Control.RemovePeer(currentPeer)
 		return
 	}
@@ -35,7 +35,7 @@ func (vm *ViewManager) HandleDelete(g *G.Gui, v *G.View) error {
 }
 
 func (vm *ViewManager) HandleTrust(g *G.Gui, v *G.View) error {
-	currentPeer := vm.Control.State.GetCurrent()
+	currentPeer := vm.Control.GetCurrent()
 	if err := vm.Control.TrustPeer(currentPeer); err != nil {
 		return err
 	}
